@@ -1,4 +1,4 @@
-package com.tr.agit.hrapptest.service;
+package com.tr.agit.hrapp.service;
 
 import org.springframework.stereotype.Service;
 

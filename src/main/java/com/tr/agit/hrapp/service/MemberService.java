@@ -6,4 +6,5 @@ public interface MemberService {
 
     void createMember(MemberDTO memberDTO);
     void addMember(MemberDTO memberDTO);
+    void sendEmail(MemberDTO memberDTO);
 }

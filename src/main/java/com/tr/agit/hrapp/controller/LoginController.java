@@ -22,4 +22,8 @@ public class LoginController {
         memberService.addMember(memberDTO);
     }
 
+    @PostMapping(value = "/send-email")
+    public void sendEmail(@RequestBody MemberDTO memberDTO) {
+        memberService.sendEmail(memberDTO);
+    }
 }

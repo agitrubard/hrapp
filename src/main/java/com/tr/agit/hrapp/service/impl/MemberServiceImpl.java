@@ -5,7 +5,9 @@ import com.tr.agit.hrapp.model.MemberEntity;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
+import org.springframework.mail.javamail.JavaMailSender;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -28,5 +30,19 @@ public class MemberServiceImpl implements MemberService {
 
         memberRepository.save(entity);
         System.out.println(memberDTO.getName() + "'s User Added to Database.");
+    }
+
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    @Override
+    public void sendEmail(MemberDTO memberDTO) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(memberDTO.getEmail());
+        message.setSubject("Welcome to HRApp");
+        message.setText("Your Password is : " + memberDTO.getPassword());
+
+        javaMailSender.send(message);
+        System.out.println("Your Message : " + message.getText() + "\n" + "To : " + memberDTO.getEmail());
     }
 }
