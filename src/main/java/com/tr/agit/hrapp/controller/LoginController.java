@@ -19,6 +19,7 @@ public class LoginController {
 
     @PostMapping(value = "/add-member")
     public void addMember(@RequestBody MemberDTO memberDTO) {
+        memberService.createMember(memberDTO);
         memberService.addMember(memberDTO);
     }
 
