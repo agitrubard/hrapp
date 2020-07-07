@@ -5,9 +5,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
-public class MemberEntity implements Serializable {
+public class MemberEntity {
 
-    private static final long serialVersionUID = -709690714098277600L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id",nullable = false,updatable = false)
@@ -24,6 +23,21 @@ public class MemberEntity implements Serializable {
 
     @Column(name = "email",nullable = false)
     private String email;
+
+    @Column(name = "temppassword",nullable = false)
+    private String tempPassword;
+
+    public MemberEntity() {
+    }
+
+    public MemberEntity(long id, String name, String surname, String password, String email, String tempPassword) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.password = password;
+        this.email = email;
+        this.tempPassword = tempPassword;
+    }
 
     public long getId() {
         return id;
@@ -63,6 +77,14 @@ public class MemberEntity implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getTempPassword() {
+        return tempPassword;
+    }
+
+    public void setTempPassword(String tempPassword) {
+        this.tempPassword = tempPassword;
     }
 
     @Override
