@@ -1,5 +1,6 @@
 package com.tr.agit.hrapp.model;
 
+import com.tr.agit.hrapp.model.entity.MemberEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +11,7 @@ import java.util.stream.Collectors;
 public class CustomUserDetails extends MemberEntity implements UserDetails {
 
     public CustomUserDetails(final MemberEntity member) {
-        new MemberEntity(member.getId(), member.getName(), member.getSurname(), member.getPassword(), member.getEmail(), member.getTempPassword());
+        super(member);
     }
 
     @Override

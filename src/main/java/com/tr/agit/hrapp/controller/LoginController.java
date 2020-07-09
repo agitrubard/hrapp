@@ -1,12 +1,15 @@
 package com.tr.agit.hrapp.controller;
 
-import com.tr.agit.hrapp.member.MemberDTO;
-import com.tr.agit.hrapp.model.MemberEntity;
+import com.tr.agit.hrapp.controller.request.LoginRequest;
+import com.tr.agit.hrapp.controller.request.PasswordChangeRequest;
+import com.tr.agit.hrapp.controller.request.SignupRequest;
+import com.tr.agit.hrapp.model.dto.MemberDto;
+import com.tr.agit.hrapp.model.entity.MemberEntity;
 import com.tr.agit.hrapp.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class LoginController {
@@ -14,38 +17,33 @@ public class LoginController {
     private MemberService memberService;
 
     @PostMapping(value = "/sign-up")
-    public void signUp(@RequestBody MemberDTO memberDTO) {
-        memberService.createMember(memberDTO);
+    public void signUp(@RequestBody SignupRequest signupRequest) {
+        memberService.createMember(signupRequest);
     }
 
-    @PostMapping(value = "/add-member")
-    public String addMember(@RequestBody MemberDTO memberDTO) {
-        memberService.addMember(memberDTO);
-        return memberDTO.getName() + "' Member Added to Database.\nTemporary Password e-Mail was Sent.";
+    @PostMapping(value = "/log-in")
+    public void logIn(@RequestBody LoginRequest loginRequest) {
+        memberService.loginMember(loginRequest);
+    }
+
+    @PostMapping(value = "/password-change")
+    public void addMembers(@RequestBody PasswordChangeRequest passwordChangeRequest) {
+        memberService.passwordChange(passwordChangeRequest);
     }
 
     @PostMapping(value = "/add-members")
-    public String addMembers(@RequestBody Iterable<MemberDTO> memberDTO) {
-        memberService.addMembers(memberDTO);
-
-        ArrayList<String> arrayList = new ArrayList<>();
-        for (MemberDTO member : memberDTO) {
-            arrayList.add(member.getName());
-        }
-        return arrayList + " Members Added to Database.\nTemporary Password e-Mail was Sent.";
+    public void addMembers(@RequestBody List<MemberDto> memberDtos) {
+        memberService.addMembers(memberDtos);
     }
 
     @PostMapping(value = "/update-member/{id}")
-    public String updateMember(@RequestBody MemberDTO memberDTO, @PathVariable long id) {
-        memberService.updateMember(id, memberDTO);
-        return memberService.getMemberById(id).getName() + "'s Member Information Update to Database.";
+    public void updateMember(@RequestBody SignupRequest signupRequest, @PathVariable long id) {
+        memberService.updateMember(id, signupRequest);
     }
 
     @DeleteMapping(value = "/delete-member/{id}")
-    public String deleteMember(@PathVariable long id) {
-        MemberEntity entity = getMemberById(id);
+    public void deleteMember(@PathVariable long id) {
         memberService.deleteMember(id);
-        return entity.getName() + "'s Member Deleted From Database.";
     }
 
     @GetMapping(value = "/get-members")

@@ -1,6 +1,6 @@
 package com.tr.agit.hrapp.repository;
 
-import com.tr.agit.hrapp.model.MemberEntity;
+import com.tr.agit.hrapp.model.entity.MemberEntity;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

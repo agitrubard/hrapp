@@ -1,7 +1,7 @@
 package com.tr.agit.hrapp.service.impl;
 
 import com.tr.agit.hrapp.model.CustomUserDetails;
-import com.tr.agit.hrapp.model.MemberEntity;
+import com.tr.agit.hrapp.model.entity.MemberEntity;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
