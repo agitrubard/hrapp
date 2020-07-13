@@ -8,5 +8,9 @@ import java.util.Optional;
 
 @Repository
 public interface MemberRepository extends CrudRepository<MemberEntity, Long> {
-    Optional<MemberEntity> findByName(String username);
+    Optional<MemberEntity> findByEmail(String email);
+
+    Iterable<MemberEntity> findAll();
+
+    Optional<MemberEntity> findByIdAndPassword(long id, String password);
 }
