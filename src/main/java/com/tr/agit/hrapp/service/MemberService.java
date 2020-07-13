@@ -16,7 +16,7 @@ public interface MemberService {
     void changePassword(long id, ChangePasswordRequest changePasswordRequest);
     void update(long id, SignupRequest signupRequest);
     void delete(long id);
-    void sendEmail(MemberDto member, int tempPassword);
+    void sendEmail(MemberEntity memberEntity);
     Iterable<MemberEntity> get();
     MemberEntity getById(long id);
 }

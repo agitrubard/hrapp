@@ -10,7 +10,7 @@ public class PasswordChangeRequestConverter {
 
     public static MemberDto convert(ChangePasswordRequest changePasswordRequest) {
         MemberDto member = new MemberDto();
-        member.setEmail(changePasswordRequest.getEmail());
+        member.setUsername(changePasswordRequest.getUsername());
         member.setPassword(changePasswordRequest.getPassword());
         member.setNewPassword(changePasswordRequest.getNewPassword());
         return member;

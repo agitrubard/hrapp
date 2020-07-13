@@ -10,9 +10,8 @@ public class LoginRequestConverter {
 
     public static MemberDto convert(LoginRequest loginRequest) {
         MemberDto member = new MemberDto();
-        member.setEmail(loginRequest.getEmail());
+        member.setUsername(loginRequest.getUsername());
         member.setPassword(loginRequest.getPassword());
-        member.setTempPassword(loginRequest.getTempPassword());
         return member;
     }
 }

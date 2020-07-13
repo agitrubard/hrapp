@@ -1,7 +1,6 @@
 package com.tr.agit.hrapp.model.entity;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 public class MemberEntity {
@@ -14,11 +13,11 @@ public class MemberEntity {
     @Column(name = "email",nullable = false)
     private String email;
 
+    @Column(name = "username",nullable = false)
+    private String username;
+
     @Column(name = "password",nullable = false)
     private String password;
-
-    @Column(name = "temppassword",nullable = false)
-    private String tempPassword;
 
     @Column(name = "name",nullable = false)
     private String name;
@@ -29,13 +28,15 @@ public class MemberEntity {
     public MemberEntity() {
     }
 
-    public MemberEntity(MemberEntity memberEntity) {
-        this.id = memberEntity.getId();
-        this.email = memberEntity.getEmail();
-        this.password = memberEntity.getPassword();
-        this.tempPassword = memberEntity.getTempPassword();
-        this.name = memberEntity.getName();
-        this.surname = memberEntity.getSurname();
+    public MemberEntity(String email, String username, String password, String name, String surname) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.surname = surname;
+    }
+
+    public MemberEntity(MemberEntity member) {
     }
 
     public long getId() {
@@ -54,20 +55,20 @@ public class MemberEntity {
         this.email = email;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getTempPassword() {
-        return tempPassword;
-    }
-
-    public void setTempPassword(String tempPassword) {
-        this.tempPassword = tempPassword;
     }
 
     public String getName() {
@@ -84,35 +85,5 @@ public class MemberEntity {
 
     public void setSurname(String surname) {
         this.surname = surname;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MemberEntity)) return false;
-        MemberEntity entity = (MemberEntity) o;
-        return getId() == entity.getId() &&
-                Objects.equals(getEmail(), entity.getEmail()) &&
-                Objects.equals(getPassword(), entity.getPassword()) &&
-                Objects.equals(getTempPassword(), entity.getTempPassword()) &&
-                Objects.equals(getName(), entity.getName()) &&
-                Objects.equals(getSurname(), entity.getSurname());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getEmail(), getPassword(), getTempPassword(), getName(), getSurname());
-    }
-
-    @Override
-    public String toString() {
-        return "MemberEntity{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", tempPassword='" + tempPassword + '\'' +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                '}';
     }
 }

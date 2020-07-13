@@ -28,7 +28,6 @@ public class MemberServiceImpl implements MemberService {
     MemberRepository memberRepository;
 
     private final Pbkdf2PasswordEncoder encoder = new Pbkdf2PasswordEncoder();
-    private int tempPassword;
 
     @Override
     public void create(SignupRequest signupRequest) {
@@ -59,12 +58,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void sendEmail(MemberDto member, int tempPassword) {
+    public void sendEmail(MemberEntity entity) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("admin@hrapp.com");
-        message.setTo(member.getEmail());
+        message.setTo(entity.getEmail());
         message.setSubject("Welcome to HRApp");
-        message.setText("Your Temporary Password is : " + tempPassword);
+        message.setText("User Name : " + entity.getUsername() + "\nTemporary Password : " + entity.getPassword());
 
         javaMailSender.send(message);
     }
@@ -118,14 +117,20 @@ public class MemberServiceImpl implements MemberService {
         MemberEntity entity = new MemberEntity();
         entity.setEmail(member.getEmail());
         //entity.setPassword(passwordEncoder(member.getPassword()));
-        entity.setPassword(member.getPassword());
-        tempPassword = generatePassword();
-        entity.setTempPassword(String.valueOf(tempPassword));
+        String username = emailToUsername(member.getEmail());
+        entity.setUsername(username);
+        int tempPassword = generatePassword();
+        entity.setPassword(String.valueOf(tempPassword));
         entity.setName(member.getName());
         entity.setSurname(member.getSurname());
 
         memberRepository.save(entity);
-        sendEmail(member, tempPassword);
+        sendEmail(entity);
+    }
+
+    private String emailToUsername(String email){
+        String[] str = email.split("@");
+        return str[0];
     }
 }
 

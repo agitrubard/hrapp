@@ -6,7 +6,6 @@ public class SignupRequest implements Serializable {
 
     private static final long serialVersionUID = 5406080565938490471L;
     private String email;
-    private String password;
     private String name;
     private String surname;
 
@@ -14,7 +13,6 @@ public class SignupRequest implements Serializable {
     public String toString() {
         return "SignupRequest{" +
                 "email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 '}';
@@ -26,14 +24,6 @@ public class SignupRequest implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getName() {

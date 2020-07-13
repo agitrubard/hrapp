@@ -5,16 +5,25 @@ import java.io.Serializable;
 public class ChangePasswordRequest implements Serializable {
 
     private static final long serialVersionUID = 7581423611922700720L;
-    private String email;
+    private String username;
     private String password;
     private String newPassword;
 
-    public String getEmail() {
-        return email;
+    @Override
+    public String toString() {
+        return "ChangePasswordRequest{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", newPassword='" + newPassword + '\'' +
+                '}';
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

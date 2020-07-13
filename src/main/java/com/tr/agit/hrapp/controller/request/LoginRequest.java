@@ -5,16 +5,23 @@ import java.io.Serializable;
 public class LoginRequest implements Serializable {
 
     private static final long serialVersionUID = 868559732900962166L;
-    private String email;
+    private String username;
     private String password;
-    private String tempPassword;
 
-    public String getEmail() {
-        return email;
+    @Override
+    public String toString() {
+        return "LoginRequest{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
@@ -23,13 +30,5 @@ public class LoginRequest implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getTempPassword() {
-        return tempPassword;
-    }
-
-    public void setTempPassword(String tempPassword) {
-        this.tempPassword = tempPassword;
     }
 }

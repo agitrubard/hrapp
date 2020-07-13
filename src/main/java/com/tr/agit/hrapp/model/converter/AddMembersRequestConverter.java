@@ -12,7 +12,6 @@ public class AddMembersRequestConverter {
         MemberDto member = new MemberDto();
         member.setEmail(signupRequest.getEmail());
         member.setName(signupRequest.getName());
-        member.setPassword(signupRequest.getPassword());
         member.setSurname(signupRequest.getSurname());
         return member;
     }
