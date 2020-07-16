@@ -1,5 +1,6 @@
 package com.tr.agit.hrapp.configuration;
 
+import com.tr.agit.hrapp.repository.GetMemberRepository;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.service.impl.CustomUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 @Configuration
 @EnableWebSecurity
-@EnableJpaRepositories(basePackageClasses = MemberRepository.class)
+@EnableJpaRepositories(basePackageClasses = {MemberRepository.class, GetMemberRepository.class})
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired

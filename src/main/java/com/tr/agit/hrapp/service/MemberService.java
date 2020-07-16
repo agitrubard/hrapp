@@ -3,6 +3,8 @@ package com.tr.agit.hrapp.service;
 import com.tr.agit.hrapp.controller.request.ChangePasswordRequest;
 import com.tr.agit.hrapp.controller.request.LoginRequest;
 import com.tr.agit.hrapp.controller.request.SignupRequest;
+import com.tr.agit.hrapp.controller.request.UpdateRequest;
+import com.tr.agit.hrapp.controller.response.GetMemberResponse;
 import com.tr.agit.hrapp.model.dto.MemberDto;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
 
@@ -10,13 +12,13 @@ import java.util.List;
 
 public interface MemberService {
 
-    void add(List<MemberDto> memberDtos);
     void create(SignupRequest signupRequest);
+    void sendEmail(MemberEntity entity, String tempPassword);
     void login(LoginRequest loginRequest);
     void changePassword(long id, ChangePasswordRequest changePasswordRequest);
-    void update(long id, SignupRequest signupRequest);
+    void add(List<MemberDto> memberDtos);
+    void update(long id, UpdateRequest updateRequest);
     void delete(long id);
-    void sendEmail(MemberEntity memberEntity);
-    Iterable<MemberEntity> get();
-    MemberEntity getById(long id);
+    List<GetMemberResponse>  get();
+    GetMemberResponse getById(long id);
 }

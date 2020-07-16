@@ -3,8 +3,9 @@ package com.tr.agit.hrapp.controller;
 import com.tr.agit.hrapp.controller.request.ChangePasswordRequest;
 import com.tr.agit.hrapp.controller.request.LoginRequest;
 import com.tr.agit.hrapp.controller.request.SignupRequest;
+import com.tr.agit.hrapp.controller.request.UpdateRequest;
+import com.tr.agit.hrapp.controller.response.GetMemberResponse;
 import com.tr.agit.hrapp.model.dto.MemberDto;
-import com.tr.agit.hrapp.model.entity.MemberEntity;
 import com.tr.agit.hrapp.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,27 +34,27 @@ public class MemberController {
     }
 
     @PostMapping(value = "/add")
-    public void addMembers(@RequestBody List<MemberDto> memberDtos) {
+    public void add(@RequestBody List<MemberDto> memberDtos) {
         memberService.add(memberDtos);
     }
 
     @PutMapping(value = "/{id}")
-    public void updateMember(@PathVariable long id, @RequestBody SignupRequest signupRequest) {
-        memberService.update(id, signupRequest);
+    public void update(@PathVariable long id, @RequestBody UpdateRequest updateRequest) {
+        memberService.update(id, updateRequest);
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deleteMember(@PathVariable long id) {
+    public void delete(@PathVariable long id) {
         memberService.delete(id);
     }
 
     @GetMapping(value = "/")
-    public Iterable<MemberEntity> getMembers() {
+    public List<GetMemberResponse> get() {
         return memberService.get();
     }
 
     @GetMapping(value = "/{id}")
-    public MemberEntity getMemberById(@PathVariable long id) {
+    public GetMemberResponse getById(@PathVariable long id) {
         return memberService.getById(id);
     }
 }

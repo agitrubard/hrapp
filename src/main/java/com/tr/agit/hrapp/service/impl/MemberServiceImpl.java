@@ -3,10 +3,14 @@ package com.tr.agit.hrapp.service.impl;
 import com.tr.agit.hrapp.controller.request.ChangePasswordRequest;
 import com.tr.agit.hrapp.controller.request.LoginRequest;
 import com.tr.agit.hrapp.controller.request.SignupRequest;
+import com.tr.agit.hrapp.controller.request.UpdateRequest;
+import com.tr.agit.hrapp.controller.response.GetMemberResponse;
 import com.tr.agit.hrapp.model.converter.LoginRequestConverter;
 import com.tr.agit.hrapp.model.converter.SignupRequestConverter;
+import com.tr.agit.hrapp.model.converter.UpdateRequestConverter;
 import com.tr.agit.hrapp.model.dto.MemberDto;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
+import com.tr.agit.hrapp.repository.GetMemberRepository;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +30,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    GetMemberRepository getMemberRepository;
 
     private final Pbkdf2PasswordEncoder encoder = new Pbkdf2PasswordEncoder();
 
@@ -58,12 +65,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void sendEmail(MemberEntity entity) {
+    public void sendEmail(MemberEntity entity, String tempPassword) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("admin@hrapp.com");
         message.setTo(entity.getEmail());
         message.setSubject("Welcome to HRApp");
-        message.setText("User Name : " + entity.getUsername() + "\nTemporary Password : " + entity.getPassword());
+        message.setText("Username : " + entity.getUsername() + "\nTemporary Password : " + tempPassword);
 
         javaMailSender.send(message);
     }
@@ -76,9 +83,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void update(long id, SignupRequest signupRequest) {
-        MemberDto member = SignupRequestConverter.convert(signupRequest);
-        MemberEntity memberEntity = getById(id);
+    public void update(long id, UpdateRequest updateRequest) {
+        MemberDto member = UpdateRequestConverter.convert(updateRequest);
+        MemberEntity memberEntity = memberRepository.findById(id);
         memberEntity.setEmail(member.getEmail());
         memberEntity.setName(member.getName());
         memberEntity.setSurname(member.getSurname());
@@ -92,45 +99,46 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public Iterable<MemberEntity> get() {
-        //GetMemberResponse ve List dönecek
-        return memberRepository.findAll();
+    public List<GetMemberResponse> get() {
+        return getMemberRepository.findAll();
     }
 
     @Override
-    public MemberEntity getById(long id) {
-        //GetMemberResponse dönecek
-        return memberRepository.findById(id).orElse(null);
-    }
-
-    private int generatePassword() {
-        Random random = new Random();
-        int password = 100000 + random.nextInt(900000);
-        return password;
-    }
-
-    private String passwordEncoder(String password) {
-        return encoder.encode(password);
+    public GetMemberResponse getById(long id) {
+        if (getMemberRepository.existsById(id)) {
+            return getMemberRepository.findById(id);
+        } else {
+            return null;
+        }
     }
 
     private void save(MemberDto member) {
         MemberEntity entity = new MemberEntity();
         entity.setEmail(member.getEmail());
-        //entity.setPassword(passwordEncoder(member.getPassword()));
         String username = emailToUsername(member.getEmail());
         entity.setUsername(username);
-        int tempPassword = generatePassword();
-        entity.setPassword(String.valueOf(tempPassword));
+        String tempPassword = String.valueOf(generatePassword());
+        //entity.setPassword(passwordEncoder(tempPassword));
+        entity.setPassword(tempPassword);
         entity.setName(member.getName());
         entity.setSurname(member.getSurname());
 
         memberRepository.save(entity);
-        sendEmail(entity);
+        sendEmail(entity, tempPassword);
     }
 
     private String emailToUsername(String email){
         String[] str = email.split("@");
         return str[0];
+    }
+
+    private int generatePassword() {
+        Random random = new Random();
+        return 100000 + random.nextInt(900000);
+    }
+
+    private String passwordEncoder(String password) {
+        return encoder.encode(password);
     }
 }
 
