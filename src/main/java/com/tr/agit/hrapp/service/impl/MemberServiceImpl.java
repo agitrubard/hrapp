@@ -10,7 +10,6 @@ import com.tr.agit.hrapp.model.converter.SignupRequestConverter;
 import com.tr.agit.hrapp.model.converter.UpdateRequestConverter;
 import com.tr.agit.hrapp.model.dto.MemberDto;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
-import com.tr.agit.hrapp.repository.GetMemberRepository;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -30,9 +30,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Autowired
     MemberRepository memberRepository;
-
-    @Autowired
-    GetMemberRepository getMemberRepository;
 
     private final Pbkdf2PasswordEncoder encoder = new Pbkdf2PasswordEncoder();
 
@@ -100,16 +97,34 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public List<GetMemberResponse> get() {
-        return getMemberRepository.findAll();
+        List<MemberEntity> memberEntities = memberRepository.findAll();
+        return getResponses(memberEntities);
+    }
+
+    private List<GetMemberResponse> getResponses(List<MemberEntity> memberEntities) {
+        return memberEntities.stream()
+                .map(this::getResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
     public GetMemberResponse getById(long id) {
-        if (getMemberRepository.existsById(id)) {
-            return getMemberRepository.findById(id);
+        if (memberRepository.existsById(id)) {
+            MemberEntity memberEntity = memberRepository.findById(id);
+            return getResponse(memberEntity);
         } else {
             return null;
         }
+    }
+
+    private GetMemberResponse getResponse(MemberEntity memberEntity) {
+        GetMemberResponse getMemberResponse = new GetMemberResponse();
+        getMemberResponse.setEmail(memberEntity.getEmail());
+        getMemberResponse.setUsername(memberEntity.getUsername());
+        getMemberResponse.setName(memberEntity.getName());
+        getMemberResponse.setSurname(memberEntity.getSurname());
+
+        return getMemberResponse;
     }
 
     private void save(MemberDto member) {
@@ -127,7 +142,7 @@ public class MemberServiceImpl implements MemberService {
         sendEmail(entity, tempPassword);
     }
 
-    private String emailToUsername(String email){
+    private String emailToUsername(String email) {
         String[] str = email.split("@");
         return str[0];
     }
