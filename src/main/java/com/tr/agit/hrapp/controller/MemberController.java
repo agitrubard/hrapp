@@ -28,9 +28,9 @@ public class MemberController {
         memberService.login(loginRequest);
     }
 
-    @PutMapping(value = "/password/{id}")
-    public void passwordChange(@PathVariable long id, @RequestBody ChangePasswordRequest changePasswordRequest) {
-        memberService.changePassword(id, changePasswordRequest);
+    @PutMapping(value = "/password")
+    public void passwordChange(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        memberService.changePassword(changePasswordRequest);
     }
 
     @PostMapping(value = "/add")

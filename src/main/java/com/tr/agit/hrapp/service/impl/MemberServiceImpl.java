@@ -15,7 +15,7 @@ import com.tr.agit.hrapp.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     MemberRepository memberRepository;
 
-    private final Pbkdf2PasswordEncoder encoder = new Pbkdf2PasswordEncoder();
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
     public void create(SignupRequest signupRequest) {
@@ -41,23 +41,28 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void login(LoginRequest loginRequest) {
-        MemberDto member = LoginRequestConverter.convert(loginRequest);
+        Optional<MemberEntity> memberEntityOptional = memberRepository.findByUsername(loginRequest.getUsername());
 
-        // Login control
+        if (memberEntityOptional.isPresent()) {
+            boolean control = encoder.matches(loginRequest.getPassword(), memberEntityOptional.get().getPassword());
+            if (control) {
+                System.out.println("Successful!");
+            }
+        }
     }
 
     @Override
-    public void changePassword(long id, ChangePasswordRequest changePasswordRequest) {
-        Optional<MemberEntity> memberEntityOptional = memberRepository.findByIdAndPassword(id, changePasswordRequest.getPassword());
-
-        //şifrelenmiş parola ile karşılaştırma
+    public void changePassword(ChangePasswordRequest changePasswordRequest) {
+        Optional<MemberEntity> memberEntityOptional = memberRepository.findByUsername(changePasswordRequest.getUsername());
 
         if (memberEntityOptional.isPresent()) {
-            memberEntityOptional.get().setPassword(changePasswordRequest.getNewPassword());
-            memberRepository.save(memberEntityOptional.get());
-            System.out.println("Password is changed.");
-        } else {
-            System.out.println("Password is not correct!");
+            boolean control = encoder.matches(changePasswordRequest.getPassword(), memberEntityOptional.get().getPassword());
+            if (control) {
+                String newPassword = passwordEncoder(changePasswordRequest.getNewPassword());
+                memberEntityOptional.get().setPassword(newPassword);
+                memberRepository.save(memberEntityOptional.get());
+                System.out.println("Password is changed.");
+            }
         }
     }
 
@@ -133,13 +138,13 @@ public class MemberServiceImpl implements MemberService {
         String username = emailToUsername(member.getEmail());
         entity.setUsername(username);
         String tempPassword = String.valueOf(generatePassword());
-        //entity.setPassword(passwordEncoder(tempPassword));
+        entity.setPassword(passwordEncoder(tempPassword));
         entity.setPassword(tempPassword);
         entity.setName(member.getName());
         entity.setSurname(member.getSurname());
 
         memberRepository.save(entity);
-        sendEmail(entity, tempPassword);
+        //sendEmail(entity, tempPassword);
     }
 
     private String emailToUsername(String email) {
@@ -156,4 +161,3 @@ public class MemberServiceImpl implements MemberService {
         return encoder.encode(password);
     }
 }
-

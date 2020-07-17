@@ -15,7 +15,7 @@ public interface MemberService {
     void create(SignupRequest signupRequest);
     void sendEmail(MemberEntity entity, String tempPassword);
     void login(LoginRequest loginRequest);
-    void changePassword(long id, ChangePasswordRequest changePasswordRequest);
+    void changePassword(ChangePasswordRequest changePasswordRequest);
     void add(List<MemberDto> memberDtos);
     void update(long id, UpdateRequest updateRequest);
     void delete(long id);

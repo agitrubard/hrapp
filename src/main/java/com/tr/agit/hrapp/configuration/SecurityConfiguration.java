@@ -15,7 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 @EnableJpaRepositories(basePackageClasses = MemberRepository.class)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
     @Autowired
     private CustomUserDetailService userDetailService;
 
@@ -35,7 +34,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers("/member/log-in");
         web.ignoring().antMatchers("/member/password/{id}");
         web.ignoring().antMatchers("/member/add");
-        web.ignoring().antMatchers("/member/{id}");
+        web.ignoring().antMatchers("/member/id");
         web.ignoring().antMatchers("/member/");
     }
 }
