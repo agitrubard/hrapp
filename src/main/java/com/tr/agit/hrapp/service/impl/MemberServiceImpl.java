@@ -5,7 +5,6 @@ import com.tr.agit.hrapp.controller.request.LoginRequest;
 import com.tr.agit.hrapp.controller.request.SignupRequest;
 import com.tr.agit.hrapp.controller.request.UpdateRequest;
 import com.tr.agit.hrapp.controller.response.GetMemberResponse;
-import com.tr.agit.hrapp.model.converter.LoginRequestConverter;
 import com.tr.agit.hrapp.model.converter.SignupRequestConverter;
 import com.tr.agit.hrapp.model.converter.UpdateRequestConverter;
 import com.tr.agit.hrapp.model.dto.MemberDto;
@@ -46,7 +45,7 @@ public class MemberServiceImpl implements MemberService {
         if (memberEntityOptional.isPresent()) {
             boolean control = encoder.matches(loginRequest.getPassword(), memberEntityOptional.get().getPassword());
             if (control) {
-                System.out.println("Successful!");
+                System.out.println("Successful.");
             }
         }
     }
@@ -61,7 +60,6 @@ public class MemberServiceImpl implements MemberService {
                 String newPassword = passwordEncoder(changePasswordRequest.getNewPassword());
                 memberEntityOptional.get().setPassword(newPassword);
                 memberRepository.save(memberEntityOptional.get());
-                System.out.println("Password is changed.");
             }
         }
     }
@@ -139,12 +137,11 @@ public class MemberServiceImpl implements MemberService {
         entity.setUsername(username);
         String tempPassword = String.valueOf(generatePassword());
         entity.setPassword(passwordEncoder(tempPassword));
-        entity.setPassword(tempPassword);
         entity.setName(member.getName());
         entity.setSurname(member.getSurname());
 
         memberRepository.save(entity);
-        //sendEmail(entity, tempPassword);
+        sendEmail(entity, tempPassword);
     }
 
     private String emailToUsername(String email) {
