@@ -1,8 +1,11 @@
 package com.tr.agit.hrapp.model.entity;
 
+import com.tr.agit.hrapp.model.enums.MemberStatus;
+
 import javax.persistence.*;
 
 @Entity
+@Table(name = "members")
 public class MemberEntity {
 
     @Id
@@ -25,15 +28,30 @@ public class MemberEntity {
     @Column(name = "surname",nullable = false)
     private String surname;
 
+    @Column(name = "status",nullable = false)
+    private MemberStatus memberStatus = MemberStatus.ACTIVE;
+
+    @OneToOne
+    @JoinColumn(name = "demand_id")
+    private DemandEntity demandId;
+
+    @OneToOne
+    @JoinColumn(name = "role_id")
+    private RoleEntity roleId;
+
     public MemberEntity() {
     }
 
-    public MemberEntity(String email, String username, String password, String name, String surname) {
+    public MemberEntity(long id, String email, String username, String password, String name, String surname, MemberStatus memberStatus, DemandEntity demandId, RoleEntity roleId) {
+        this.id = id;
         this.email = email;
         this.username = username;
         this.password = password;
         this.name = name;
         this.surname = surname;
+        this.memberStatus = memberStatus;
+        this.demandId = demandId;
+        this.roleId = roleId;
     }
 
     public MemberEntity(MemberEntity member) {
@@ -87,6 +105,30 @@ public class MemberEntity {
         this.surname = surname;
     }
 
+    public MemberStatus getMemberStatus() {
+        return memberStatus;
+    }
+
+    public void setMemberStatus(MemberStatus memberStatus) {
+        this.memberStatus = memberStatus;
+    }
+
+    public DemandEntity getDemandId() {
+        return demandId;
+    }
+
+    public void setDemandId(DemandEntity demandId) {
+        this.demandId = demandId;
+    }
+
+    public RoleEntity getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(RoleEntity roleId) {
+        this.roleId = roleId;
+    }
+
     @Override
     public String toString() {
         return "MemberEntity{" +
@@ -96,6 +138,9 @@ public class MemberEntity {
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
+                ", memberStatus=" + memberStatus +
+                ", demandId=" + demandId +
+                ", roleId=" + roleId +
                 '}';
     }
 }

@@ -12,11 +12,11 @@ import java.util.List;
 
 public interface MemberService {
 
-    void create(SignupRequest signupRequest);
+    void create(SignupRequest signupRequest) throws Exception;
     void sendEmail(MemberEntity entity, String tempPassword);
     void login(LoginRequest loginRequest);
-    void changePassword(ChangePasswordRequest changePasswordRequest);
-    void add(List<MemberDto> memberDtos);
+    void changePassword(ChangePasswordRequest changePasswordRequest) throws Exception;
+    void add(List<MemberDto> memberDtos) throws Exception;
     void update(long id, UpdateRequest updateRequest);
     void delete(long id);
     List<GetMemberResponse>  get();

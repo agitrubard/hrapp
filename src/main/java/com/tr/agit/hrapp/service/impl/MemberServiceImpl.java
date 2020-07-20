@@ -9,6 +9,7 @@ import com.tr.agit.hrapp.model.converter.SignupRequestConverter;
 import com.tr.agit.hrapp.model.converter.UpdateRequestConverter;
 import com.tr.agit.hrapp.model.dto.MemberDto;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
+import com.tr.agit.hrapp.model.enums.MemberStatus;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class MemberServiceImpl implements MemberService {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
-    public void create(SignupRequest signupRequest) {
+    public void create(SignupRequest signupRequest) throws Exception {
         MemberDto member = SignupRequestConverter.convert(signupRequest);
         save(member);
     }
@@ -51,7 +52,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void changePassword(ChangePasswordRequest changePasswordRequest) {
+    public void changePassword(ChangePasswordRequest changePasswordRequest) throws Exception {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findByUsername(changePasswordRequest.getUsername());
 
         if (memberEntityOptional.isPresent()) {
@@ -60,7 +61,11 @@ public class MemberServiceImpl implements MemberService {
                 String newPassword = passwordEncoder(changePasswordRequest.getNewPassword());
                 memberEntityOptional.get().setPassword(newPassword);
                 memberRepository.save(memberEntityOptional.get());
+            } else {
+                throw new Exception("Password is not correct!");
             }
+        } else {
+            throw new NullPointerException("Member is not found!");
         }
     }
 
@@ -76,7 +81,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void add(List<MemberDto> memberDtos) {
+    public void add(List<MemberDto> memberDtos) throws Exception {
         for (MemberDto member : memberDtos) {
             save(member);
         }
@@ -95,7 +100,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void delete(long id) {
-        memberRepository.deleteById(id);
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setMemberStatus(MemberStatus.PASSIVE);
+        memberRepository.save(memberEntity);
     }
 
     @Override
@@ -104,11 +111,6 @@ public class MemberServiceImpl implements MemberService {
         return getResponses(memberEntities);
     }
 
-    private List<GetMemberResponse> getResponses(List<MemberEntity> memberEntities) {
-        return memberEntities.stream()
-                .map(this::getResponse)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public GetMemberResponse getById(long id) {
@@ -130,18 +132,30 @@ public class MemberServiceImpl implements MemberService {
         return getMemberResponse;
     }
 
-    private void save(MemberDto member) {
-        MemberEntity entity = new MemberEntity();
-        entity.setEmail(member.getEmail());
-        String username = emailToUsername(member.getEmail());
-        entity.setUsername(username);
-        String tempPassword = String.valueOf(generatePassword());
-        entity.setPassword(passwordEncoder(tempPassword));
-        entity.setName(member.getName());
-        entity.setSurname(member.getSurname());
+    private List<GetMemberResponse> getResponses(List<MemberEntity> memberEntities) {
+        return memberEntities.stream()
+                .map(this::getResponse)
+                .collect(Collectors.toList());
+    }
 
-        memberRepository.save(entity);
-        sendEmail(entity, tempPassword);
+    private void save(MemberDto member) throws Exception {
+        Optional<MemberEntity> memberEntityOptional = memberRepository.findByEmail(member.getEmail());
+
+        if (!(memberEntityOptional.isPresent())) {
+            MemberEntity memberentity = new MemberEntity();
+            memberentity.setEmail(member.getEmail());
+            String username = emailToUsername(member.getEmail());
+            memberentity.setUsername(username);
+            String tempPassword = String.valueOf(generatePassword());
+            memberentity.setPassword(passwordEncoder(tempPassword));
+            memberentity.setName(member.getName());
+            memberentity.setSurname(member.getSurname());
+
+            memberRepository.save(memberentity);
+            sendEmail(memberentity, tempPassword);
+        } else {
+            throw new Exception("Member is already exists!");
+        }
     }
 
     private String emailToUsername(String email) {

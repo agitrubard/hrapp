@@ -19,7 +19,7 @@ public class MemberController {
     MemberService memberService;
 
     @PostMapping(value = "/sign-up")
-    public void signUp(@RequestBody SignupRequest signupRequest) {
+    public void signUp(@RequestBody SignupRequest signupRequest) throws Exception {
         memberService.create(signupRequest);
     }
 
@@ -29,12 +29,12 @@ public class MemberController {
     }
 
     @PutMapping(value = "/password")
-    public void passwordChange(@RequestBody ChangePasswordRequest changePasswordRequest) {
+    public void passwordChange(@RequestBody ChangePasswordRequest changePasswordRequest) throws Exception {
         memberService.changePassword(changePasswordRequest);
     }
 
     @PostMapping(value = "/add")
-    public void add(@RequestBody List<MemberDto> memberDtos) {
+    public void add(@RequestBody List<MemberDto> memberDtos) throws Exception {
         memberService.add(memberDtos);
     }
 
@@ -49,7 +49,7 @@ public class MemberController {
     }
 
     @GetMapping(value = "/")
-    public List<GetMemberResponse> get() {
+    public List<GetMemberResponse> getMembers() {
         return memberService.get();
     }
 
