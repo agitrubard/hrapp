@@ -1,5 +1,7 @@
 package com.tr.agit.hrapp.model.dto;
 
+import com.tr.agit.hrapp.model.enums.MemberStatus;
+
 import java.io.Serializable;
 
 public class MemberDto implements Serializable {
@@ -11,6 +13,7 @@ public class MemberDto implements Serializable {
     private String name;
     private String surname;
     private String newPassword;
+    private MemberStatus memberStatus;
 
     public String getEmail() {
         return email;
@@ -58,5 +61,13 @@ public class MemberDto implements Serializable {
 
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    public MemberStatus getMemberStatus() {
+        return memberStatus;
+    }
+
+    public void setMemberStatus(MemberStatus memberStatus) {
+        this.memberStatus = memberStatus;
     }
 }

@@ -4,35 +4,35 @@ import com.tr.agit.hrapp.model.enums.DemandStatus;
 import com.tr.agit.hrapp.model.enums.DemandType;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "demands")
 public class DemandEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false, unique = true)
     private long id;
 
     @JoinColumn(name = "member_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(targetEntity = MemberEntity.class)
     private MemberEntity memberId;
 
-    @Column(name = "start_date")
-    private LocalDateTime startDate;
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
 
-    @Column(name = "end_date")
-    private LocalDateTime endDate;
+    @Column(name = "end_date", nullable = false)
+    private LocalDate endDate;
 
-    @Column(name = "total_time")
-    private int totalTime;
+    @Column(name = "total_days", nullable = false)
+    private long totalDays;
 
-    @Column(name = "type")
+    @Column(name = "type", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private DemandType type;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private DemandStatus status;
 
@@ -52,28 +52,28 @@ public class DemandEntity {
         this.memberId = memberId;
     }
 
-    public LocalDateTime getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDateTime getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
-    public int getTotalTime() {
-        return totalTime;
+    public long getTotalDays() {
+        return totalDays;
     }
 
-    public void setTotalTime(int totalTime) {
-        this.totalTime = totalTime;
+    public void setTotalDays(long totalDays) {
+        this.totalDays = totalDays;
     }
 
     public DemandType getType() {
@@ -99,7 +99,7 @@ public class DemandEntity {
                 ", memberId=" + memberId +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", totalTime=" + totalTime +
+                ", totalTime=" + totalDays +
                 ", type=" + type +
                 ", status=" + status +
                 '}';

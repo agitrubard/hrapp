@@ -111,7 +111,6 @@ public class MemberServiceImpl implements MemberService {
         return getResponses(memberEntities);
     }
 
-
     @Override
     public GetMemberResponse getById(long id) {
         if (memberRepository.existsById(id)) {
@@ -151,6 +150,7 @@ public class MemberServiceImpl implements MemberService {
             memberentity.setPassword(passwordEncoder(tempPassword));
             memberentity.setName(member.getName());
             memberentity.setSurname(member.getSurname());
+            memberentity.setMemberStatus(member.getMemberStatus());
 
             memberRepository.save(memberentity);
             sendEmail(memberentity, tempPassword);

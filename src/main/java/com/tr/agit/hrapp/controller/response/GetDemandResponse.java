@@ -1,26 +1,17 @@
-package com.tr.agit.hrapp.model.dto;
+package com.tr.agit.hrapp.controller.response;
 
 import com.tr.agit.hrapp.model.enums.DemandStatus;
 import com.tr.agit.hrapp.model.enums.DemandType;
 
 import java.time.LocalDate;
 
-public class DemandDto {
+public class GetDemandResponse {
 
-    private long memberId;
     private LocalDate startDate;
     private LocalDate endDate;
     private long totalDays;
     private DemandType type;
     private DemandStatus status;
-
-    public long getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(long memberId) {
-        this.memberId = memberId;
-    }
 
     public LocalDate getStartDate() {
         return startDate;
@@ -60,5 +51,16 @@ public class DemandDto {
 
     public void setStatus(DemandStatus status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "GetDemandResponse{" +
+                "startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", totalDays=" + totalDays +
+                ", type=" + type +
+                ", status=" + status +
+                '}';
     }
 }

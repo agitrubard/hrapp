@@ -20,7 +20,7 @@ public class MemberEntity {
     @Column(name = "username",nullable = false)
     private String username;
 
-    @Column(name = "password",nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "name",nullable = false)
@@ -30,7 +30,8 @@ public class MemberEntity {
     private String surname;
 
     @Column(name = "status",nullable = false)
-    private MemberStatus memberStatus = MemberStatus.ACTIVE;
+    @Enumerated(value = EnumType.STRING)
+    private MemberStatus memberStatus;
 
     @OneToMany(mappedBy = "memberId", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<DemandEntity> demands;

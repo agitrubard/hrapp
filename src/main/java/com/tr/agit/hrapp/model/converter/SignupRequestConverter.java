@@ -2,6 +2,7 @@ package com.tr.agit.hrapp.model.converter;
 
 import com.tr.agit.hrapp.controller.request.SignupRequest;
 import com.tr.agit.hrapp.model.dto.MemberDto;
+import com.tr.agit.hrapp.model.enums.MemberStatus;
 
 public class SignupRequestConverter {
 
@@ -13,6 +14,7 @@ public class SignupRequestConverter {
         member.setEmail(signupRequest.getEmail());
         member.setName(signupRequest.getName());
         member.setSurname(signupRequest.getSurname());
+        member.setMemberStatus(MemberStatus.ACTIVE);
         return member;
     }
 }
