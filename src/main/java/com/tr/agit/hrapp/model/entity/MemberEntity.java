@@ -3,6 +3,7 @@ package com.tr.agit.hrapp.model.entity;
 import com.tr.agit.hrapp.model.enums.MemberStatus;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "members")
@@ -31,9 +32,8 @@ public class MemberEntity {
     @Column(name = "status",nullable = false)
     private MemberStatus memberStatus = MemberStatus.ACTIVE;
 
-    @OneToOne
-    @JoinColumn(name = "demand_id")
-    private DemandEntity demandId;
+    @OneToMany(mappedBy = "member_id", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<DemandEntity> demands;
 
     public MemberEntity() {
     }
@@ -46,7 +46,6 @@ public class MemberEntity {
         this.name = name;
         this.surname = surname;
         this.memberStatus = memberStatus;
-        this.demandId = demandId;
     }
 
     public MemberEntity(MemberEntity member) {
@@ -108,12 +107,12 @@ public class MemberEntity {
         this.memberStatus = memberStatus;
     }
 
-    public DemandEntity getDemandId() {
-        return demandId;
+    public List<DemandEntity> getDemands() {
+        return demands;
     }
 
-    public void setDemandId(DemandEntity demandId) {
-        this.demandId = demandId;
+    public void setDemands(List<DemandEntity> demands) {
+        this.demands = demands;
     }
 
     @Override
@@ -126,7 +125,6 @@ public class MemberEntity {
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", memberStatus=" + memberStatus +
-                ", demandId=" + demandId +
                 '}';
     }
 }
