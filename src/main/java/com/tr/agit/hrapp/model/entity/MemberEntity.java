@@ -32,7 +32,7 @@ public class MemberEntity {
     @Column(name = "status",nullable = false)
     private MemberStatus memberStatus = MemberStatus.ACTIVE;
 
-    @OneToMany(mappedBy = "member_id", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "memberId", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<DemandEntity> demands;
 
     public MemberEntity() {
@@ -105,14 +105,6 @@ public class MemberEntity {
 
     public void setMemberStatus(MemberStatus memberStatus) {
         this.memberStatus = memberStatus;
-    }
-
-    public List<DemandEntity> getDemands() {
-        return demands;
-    }
-
-    public void setDemands(List<DemandEntity> demands) {
-        this.demands = demands;
     }
 
     @Override
