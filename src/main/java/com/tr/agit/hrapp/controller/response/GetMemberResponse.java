@@ -1,11 +1,14 @@
 package com.tr.agit.hrapp.controller.response;
 
+import com.tr.agit.hrapp.model.enums.MemberStatus;
+
 public class GetMemberResponse {
 
     private String email;
     private String username;
     private String name;
     private String surname;
+    private MemberStatus status;
 
     public String getEmail() {
         return email;
@@ -39,6 +42,14 @@ public class GetMemberResponse {
         this.surname = surname;
     }
 
+    public MemberStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MemberStatus status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "GetMemberResponse{" +
@@ -46,6 +57,7 @@ public class GetMemberResponse {
                 ", username='" + username + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
+                ", status=" + status +
                 '}';
     }
 }

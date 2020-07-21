@@ -100,7 +100,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void delete(long id) {
-        MemberEntity memberEntity = new MemberEntity();
+        MemberEntity memberEntity = memberRepository.findById(id);
         memberEntity.setMemberStatus(MemberStatus.PASSIVE);
         memberRepository.save(memberEntity);
     }
@@ -128,6 +128,7 @@ public class MemberServiceImpl implements MemberService {
         getMemberResponse.setUsername(memberEntity.getUsername());
         getMemberResponse.setName(memberEntity.getName());
         getMemberResponse.setSurname(memberEntity.getSurname());
+        getMemberResponse.setStatus(memberEntity.getMemberStatus());
 
         return getMemberResponse;
     }
