@@ -35,14 +35,10 @@ public class MemberEntity {
     @JoinColumn(name = "demand_id")
     private DemandEntity demandId;
 
-    @OneToOne
-    @JoinColumn(name = "role_id")
-    private RoleEntity roleId;
-
     public MemberEntity() {
     }
 
-    public MemberEntity(long id, String email, String username, String password, String name, String surname, MemberStatus memberStatus, DemandEntity demandId, RoleEntity roleId) {
+    public MemberEntity(long id, String email, String username, String password, String name, String surname, MemberStatus memberStatus, DemandEntity demandId) {
         this.id = id;
         this.email = email;
         this.username = username;
@@ -51,7 +47,6 @@ public class MemberEntity {
         this.surname = surname;
         this.memberStatus = memberStatus;
         this.demandId = demandId;
-        this.roleId = roleId;
     }
 
     public MemberEntity(MemberEntity member) {
@@ -121,14 +116,6 @@ public class MemberEntity {
         this.demandId = demandId;
     }
 
-    public RoleEntity getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(RoleEntity roleId) {
-        this.roleId = roleId;
-    }
-
     @Override
     public String toString() {
         return "MemberEntity{" +
@@ -140,7 +127,6 @@ public class MemberEntity {
                 ", surname='" + surname + '\'' +
                 ", memberStatus=" + memberStatus +
                 ", demandId=" + demandId +
-                ", roleId=" + roleId +
                 '}';
     }
 }
