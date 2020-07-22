@@ -39,16 +39,6 @@ public class MemberEntity {
     public MemberEntity() {
     }
 
-    public MemberEntity(long id, String email, String username, String password, String name, String surname, MemberStatus memberStatus, DemandEntity demandId) {
-        this.id = id;
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.name = name;
-        this.surname = surname;
-        this.memberStatus = memberStatus;
-    }
-
     public MemberEntity(MemberEntity member) {
     }
 
