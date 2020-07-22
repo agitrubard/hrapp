@@ -67,44 +67,40 @@ public class MemberServiceImpl implements MemberService {
                 throw new Exception("Password is not correct!");
             }
         } else {
-            throw new NullPointerException("Member is not found!");
+            throw new NullPointerException("Member is not found or deleted!");
         }
     }
 
     @Override
-    public void sendEmail(MemberEntity entity, String tempPassword) {
+    public void sendEmail(MemberEntity memberEntity, String tempPassword) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("admin@hrapp.com");
-        message.setTo(entity.getEmail());
+        message.setTo(memberEntity.getEmail());
         message.setSubject("Welcome to HRApp");
-        message.setText("Username : " + entity.getUsername() + "\nTemporary Password : " + tempPassword);
+        message.setText("Username : " + memberEntity.getUsername() + "\nTemporary Password : " + tempPassword);
 
         javaMailSender.send(message);
     }
 
     @Override
-    public void add(List<MemberDto> memberDtos) throws Exception {
-        for (MemberDto member : memberDtos) {
-            save(member);
+    public void update(long id, UpdateRequest updateRequest) {
+        MemberDto member = UpdateRequestConverter.convert(updateRequest);
+        Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
+        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
+            updateMember(member, memberEntityOptional);
+        } else {
+            throw new NullPointerException("Member is not found or deleted!");
         }
     }
 
     @Override
-    public void update(long id, UpdateRequest updateRequest) {
-        MemberDto member = UpdateRequestConverter.convert(updateRequest);
-        MemberEntity memberEntity = memberRepository.findById(id);
-        memberEntity.setEmail(member.getEmail());
-        memberEntity.setName(member.getName());
-        memberEntity.setSurname(member.getSurname());
-
-        memberRepository.save(memberEntity);
-    }
-
-    @Override
     public void delete(long id) {
-        MemberEntity memberEntity = memberRepository.findById(id);
-        memberEntity.setStatus(MemberStatus.PASSIVE);
-        memberRepository.save(memberEntity);
+        Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
+        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
+            deleteMember(memberEntityOptional);
+        } else {
+            throw new NullPointerException("Member is not found or deleted!");
+        }
     }
 
     @Override
@@ -116,11 +112,49 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public GetMemberResponse getById(long id) {
         if (memberRepository.existsById(id)) {
-            MemberEntity memberEntity = memberRepository.findById(id);
-            return getResponse(memberEntity);
+            Optional<MemberEntity> memberEntity = memberRepository.findById(id);
+            return getResponse(memberEntity.get());
         } else {
             return null;
         }
+    }
+
+    private void save(MemberDto member) throws Exception {
+        Optional<MemberEntity> memberEntityOptional = memberRepository.findByEmail(member.getEmail());
+
+        if (!(memberEntityOptional.isPresent())) {
+            saveMember(member);
+        } else {
+            throw new Exception("Member is already exists!");
+        }
+    }
+
+    private void saveMember(MemberDto member) {
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setEmail(member.getEmail());
+        String username = emailToUsername(member.getEmail());
+        memberEntity.setUsername(username);
+        String tempPassword = String.valueOf(generatePassword());
+        memberEntity.setPassword(passwordEncoder(tempPassword));
+        memberEntity.setName(member.getName());
+        memberEntity.setSurname(member.getSurname());
+        memberEntity.setStatus(member.getStatus());
+
+        memberRepository.save(memberEntity);
+        sendEmail(memberEntity, tempPassword);
+    }
+
+    private void updateMember(MemberDto member, Optional<MemberEntity> memberEntityOptional) {
+        memberEntityOptional.get().setEmail(member.getEmail());
+        memberEntityOptional.get().setName(member.getName());
+        memberEntityOptional.get().setSurname(member.getSurname());
+
+        memberRepository.save(memberEntityOptional.get());
+    }
+
+    private void deleteMember(Optional<MemberEntity> memberEntityOptional) {
+        memberEntityOptional.get().setStatus(MemberStatus.PASSIVE);
+        memberRepository.save(memberEntityOptional.get());
     }
 
     private GetMemberResponse getResponse(MemberEntity memberEntity) {
@@ -138,27 +172,6 @@ public class MemberServiceImpl implements MemberService {
         return memberEntities.stream()
                 .map(this::getResponse)
                 .collect(Collectors.toList());
-    }
-
-    private void save(MemberDto member) throws Exception {
-        Optional<MemberEntity> memberEntityOptional = memberRepository.findByEmail(member.getEmail());
-
-        if (!(memberEntityOptional.isPresent())) {
-            MemberEntity memberentity = new MemberEntity();
-            memberentity.setEmail(member.getEmail());
-            String username = emailToUsername(member.getEmail());
-            memberentity.setUsername(username);
-            String tempPassword = String.valueOf(generatePassword());
-            memberentity.setPassword(passwordEncoder(tempPassword));
-            memberentity.setName(member.getName());
-            memberentity.setSurname(member.getSurname());
-            memberentity.setStatus(member.getStatus());
-
-            memberRepository.save(memberentity);
-            sendEmail(memberentity, tempPassword);
-        } else {
-            throw new Exception("Member is already exists!");
-        }
     }
 
     private String emailToUsername(String email) {

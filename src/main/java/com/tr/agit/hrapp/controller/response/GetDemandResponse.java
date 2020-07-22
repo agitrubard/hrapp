@@ -1,12 +1,15 @@
 package com.tr.agit.hrapp.controller.response;
 
+import com.tr.agit.hrapp.model.entity.DemandEntity;
 import com.tr.agit.hrapp.model.enums.DemandStatus;
 import com.tr.agit.hrapp.model.enums.DemandType;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class GetDemandResponse {
 
+    private static List<DemandEntity> demandResponseList;
     private LocalDate startDate;
     private LocalDate endDate;
     private long totalDays;
@@ -51,6 +54,14 @@ public class GetDemandResponse {
 
     public void setStatus(DemandStatus status) {
         this.status = status;
+    }
+
+    public static List<DemandEntity> getDemandResponseList() {
+        return demandResponseList;
+    }
+
+    public static void setDemandResponseList(List<DemandEntity> demandResponseList) {
+        GetDemandResponse.demandResponseList = demandResponseList;
     }
 
     @Override

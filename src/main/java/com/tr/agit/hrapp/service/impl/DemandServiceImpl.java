@@ -27,20 +27,9 @@ public class DemandServiceImpl implements DemandService {
 
     @Override
     public void create(long id, CreateDemandRequest createDemandRequest) throws NullPointerException {
-        MemberEntity memberEntity = memberRepository.findById(id);
-        Optional<MemberEntity> memberEntityOptional = memberRepository.findByUsername(memberEntity.getUsername());
-        if (memberEntityOptional.isPresent() && memberEntity.getStatus() == MemberStatus.ACTIVE) {
-            DemandDto demand = CreateDemandRequestConverter.convert(createDemandRequest);
-            DemandEntity demandEntity = new DemandEntity();
-
-            demandEntity.setMemberId(memberEntity);
-            demandEntity.setType(demand.getType());
-            demandEntity.setStartDate(demand.getStartDate());
-            demandEntity.setEndDate(demand.getEndDate());
-            demandEntity.setTotalDays(demand.getTotalDays());
-            demandEntity.setStatus(demand.getStatus());
-
-            demandRepository.save(demandEntity);
+        Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
+        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
+            save(createDemandRequest, memberEntityOptional);
         } else {
             throw new NullPointerException("Member is not found or passive!");
         }
@@ -61,6 +50,20 @@ public class DemandServiceImpl implements DemandService {
         getDemandResponse.setStatus(demandEntity.getStatus());
 
         return getDemandResponse;
+    }
+
+    private void save(CreateDemandRequest createDemandRequest, Optional<MemberEntity> memberEntityOptional) {
+        DemandDto demand = CreateDemandRequestConverter.convert(createDemandRequest);
+        DemandEntity demandEntity = new DemandEntity();
+
+        demandEntity.setMemberId(memberEntityOptional.get());
+        demandEntity.setType(demand.getType());
+        demandEntity.setStartDate(demand.getStartDate());
+        demandEntity.setEndDate(demand.getEndDate());
+        demandEntity.setTotalDays(demand.getTotalDays());
+        demandEntity.setStatus(demand.getStatus());
+
+        demandRepository.save(demandEntity);
     }
 
     private List<GetDemandResponse> getResponses(List<DemandEntity> demandEntities) {

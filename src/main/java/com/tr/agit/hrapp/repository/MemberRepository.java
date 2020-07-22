@@ -13,7 +13,7 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
 
     Optional<MemberEntity> findByUsername(String username);
 
-    MemberEntity findById(long id);
+    Optional<MemberEntity> findById(long id);
 
     List<MemberEntity> findAll();
 }

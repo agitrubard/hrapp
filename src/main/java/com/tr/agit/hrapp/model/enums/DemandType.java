@@ -2,8 +2,8 @@ package com.tr.agit.hrapp.model.enums;
 
 public enum DemandType {
 
-    YILLIKIZIN,
-    MAZERETIZNI,
-    DOGUMIZNI,
-    BABALIKIZNI
+    ANNUAL_LEAVE,
+    CASUAL_LEAVE,
+    MATERNITY_LEAVE,
+    PATERNITY_LEAVE
 }
