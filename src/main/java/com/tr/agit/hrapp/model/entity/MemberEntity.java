@@ -14,24 +14,24 @@ public class MemberEntity {
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     private long id;
 
-    @Column(name = "email",nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "username",nullable = false)
+    @Column(name = "username", nullable = false)
     private String username;
 
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "name",nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "surname",nullable = false)
+    @Column(name = "surname", nullable = false)
     private String surname;
 
-    @Column(name = "status",nullable = false)
+    @Column(name = "status", nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private MemberStatus memberStatus;
+    private MemberStatus status;
 
     @OneToMany(mappedBy = "memberId", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<DemandEntity> demands;
@@ -46,10 +46,17 @@ public class MemberEntity {
         this.password = password;
         this.name = name;
         this.surname = surname;
-        this.memberStatus = memberStatus;
+        this.status = status;
     }
 
     public MemberEntity(MemberEntity member) {
+        this.id = member.getId();
+        this.email = member.getEmail();
+        this.username = member.getUsername();
+        this.password = member.getPassword();
+        this.name = member.getName();
+        this.surname = member.getSurname();
+        this.status = member.getStatus();
     }
 
     public long getId() {
@@ -100,12 +107,12 @@ public class MemberEntity {
         this.surname = surname;
     }
 
-    public MemberStatus getMemberStatus() {
-        return memberStatus;
+    public MemberStatus getStatus() {
+        return status;
     }
 
-    public void setMemberStatus(MemberStatus memberStatus) {
-        this.memberStatus = memberStatus;
+    public void setStatus(MemberStatus status) {
+        this.status = status;
     }
 
     @Override
@@ -117,7 +124,7 @@ public class MemberEntity {
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
-                ", memberStatus=" + memberStatus +
+                ", status=" + status +
                 '}';
     }
 }

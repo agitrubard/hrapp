@@ -14,7 +14,7 @@ public class SignupRequestConverter {
         member.setEmail(signupRequest.getEmail());
         member.setName(signupRequest.getName());
         member.setSurname(signupRequest.getSurname());
-        member.setMemberStatus(MemberStatus.ACTIVE);
+        member.setStatus(MemberStatus.ACTIVE);
         return member;
     }
 }

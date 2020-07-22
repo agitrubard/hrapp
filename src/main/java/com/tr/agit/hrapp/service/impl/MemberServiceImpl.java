@@ -5,6 +5,7 @@ import com.tr.agit.hrapp.controller.request.LoginRequest;
 import com.tr.agit.hrapp.controller.request.SignupRequest;
 import com.tr.agit.hrapp.controller.request.UpdateRequest;
 import com.tr.agit.hrapp.controller.response.GetMemberResponse;
+import com.tr.agit.hrapp.model.converter.LoginRequestConverter;
 import com.tr.agit.hrapp.model.converter.SignupRequestConverter;
 import com.tr.agit.hrapp.model.converter.UpdateRequestConverter;
 import com.tr.agit.hrapp.model.dto.MemberDto;
@@ -41,7 +42,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void login(LoginRequest loginRequest) {
-        Optional<MemberEntity> memberEntityOptional = memberRepository.findByUsername(loginRequest.getUsername());
+        MemberDto member = LoginRequestConverter.convert(loginRequest);
+        Optional<MemberEntity> memberEntityOptional = memberRepository.findByUsername(member.getUsername());
 
         if (memberEntityOptional.isPresent()) {
             boolean control = encoder.matches(loginRequest.getPassword(), memberEntityOptional.get().getPassword());
@@ -101,7 +103,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void delete(long id) {
         MemberEntity memberEntity = memberRepository.findById(id);
-        memberEntity.setMemberStatus(MemberStatus.PASSIVE);
+        memberEntity.setStatus(MemberStatus.PASSIVE);
         memberRepository.save(memberEntity);
     }
 
@@ -127,7 +129,7 @@ public class MemberServiceImpl implements MemberService {
         getMemberResponse.setUsername(memberEntity.getUsername());
         getMemberResponse.setName(memberEntity.getName());
         getMemberResponse.setSurname(memberEntity.getSurname());
-        getMemberResponse.setStatus(memberEntity.getMemberStatus());
+        getMemberResponse.setStatus(memberEntity.getStatus());
 
         return getMemberResponse;
     }
@@ -150,7 +152,7 @@ public class MemberServiceImpl implements MemberService {
             memberentity.setPassword(passwordEncoder(tempPassword));
             memberentity.setName(member.getName());
             memberentity.setSurname(member.getSurname());
-            memberentity.setMemberStatus(member.getMemberStatus());
+            memberentity.setStatus(member.getStatus());
 
             memberRepository.save(memberentity);
             sendEmail(memberentity, tempPassword);

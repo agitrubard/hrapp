@@ -13,7 +13,7 @@ public class MemberDto implements Serializable {
     private String name;
     private String surname;
     private String newPassword;
-    private MemberStatus memberStatus;
+    private MemberStatus status;
 
     public String getEmail() {
         return email;
@@ -63,11 +63,11 @@ public class MemberDto implements Serializable {
         this.newPassword = newPassword;
     }
 
-    public MemberStatus getMemberStatus() {
-        return memberStatus;
+    public MemberStatus getStatus() {
+        return status;
     }
 
-    public void setMemberStatus(MemberStatus memberStatus) {
-        this.memberStatus = memberStatus;
+    public void setStatus(MemberStatus status) {
+        this.status = status;
     }
 }

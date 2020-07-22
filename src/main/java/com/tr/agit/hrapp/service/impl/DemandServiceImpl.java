@@ -26,11 +26,11 @@ public class DemandServiceImpl implements DemandService {
     DemandRepository demandRepository;
 
     @Override
-    public void create(long id, CreateDemandRequest createDemandRequest) throws NullPointerException{
+    public void create(long id, CreateDemandRequest createDemandRequest) throws NullPointerException {
         MemberEntity memberEntity = memberRepository.findById(id);
         Optional<MemberEntity> memberEntityOptional = memberRepository.findByUsername(memberEntity.getUsername());
-        if (memberEntityOptional.isPresent() && memberEntity.getMemberStatus() == MemberStatus.ACTIVE) {
-        DemandDto demand = CreateDemandRequestConverter.convert(createDemandRequest);
+        if (memberEntityOptional.isPresent() && memberEntity.getStatus() == MemberStatus.ACTIVE) {
+            DemandDto demand = CreateDemandRequestConverter.convert(createDemandRequest);
             DemandEntity demandEntity = new DemandEntity();
 
             demandEntity.setMemberId(memberEntity);
@@ -42,7 +42,7 @@ public class DemandServiceImpl implements DemandService {
 
             demandRepository.save(demandEntity);
         } else {
-           throw new NullPointerException("Member is not found or passive!");
+            throw new NullPointerException("Member is not found or passive!");
         }
     }
 
