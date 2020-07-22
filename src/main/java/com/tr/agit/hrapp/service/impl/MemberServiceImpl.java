@@ -45,7 +45,7 @@ public class MemberServiceImpl implements MemberService {
         MemberDto member = LoginRequestConverter.convert(loginRequest);
         Optional<MemberEntity> memberEntityOptional = memberRepository.findByUsername(member.getUsername());
 
-        if (memberEntityOptional.isPresent()) {
+        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
             boolean control = encoder.matches(loginRequest.getPassword(), memberEntityOptional.get().getPassword());
             if (control) {
                 System.out.println("Successful.");
