@@ -70,4 +70,17 @@ public class MemberDto implements Serializable {
     public void setStatus(MemberStatus status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "MemberDto{" +
+                "email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", newPassword='" + newPassword + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

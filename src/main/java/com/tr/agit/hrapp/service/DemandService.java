@@ -8,5 +8,6 @@ import java.util.List;
 public interface DemandService {
 
     void create(long id, CreateDemandRequest createDemandRequest);
+
     List<GetDemandResponse> getById(long id);
 }

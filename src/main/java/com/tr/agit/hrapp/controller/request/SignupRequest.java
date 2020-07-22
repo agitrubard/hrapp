@@ -9,15 +9,6 @@ public class SignupRequest implements Serializable {
     private String name;
     private String surname;
 
-    @Override
-    public String toString() {
-        return "SignupRequest{" +
-                "email='" + email + '\'' +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                '}';
-    }
-
     public String getEmail() {
         return email;
     }
@@ -40,5 +31,14 @@ public class SignupRequest implements Serializable {
 
     public void setSurname(String surname) {
         this.surname = surname;
+    }
+
+    @Override
+    public String toString() {
+        return "SignupRequest{" +
+                "email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                '}';
     }
 }

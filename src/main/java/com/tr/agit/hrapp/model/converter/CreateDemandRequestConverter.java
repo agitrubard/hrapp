@@ -13,7 +13,7 @@ public class CreateDemandRequestConverter {
 
     public static DemandDto convert(CreateDemandRequest createDemandRequest) {
         DemandDto demand = new DemandDto();
-        demand.setType(createDemandRequest.getDemandType());
+        demand.setType(createDemandRequest.getType());
         demand.setStartDate(createDemandRequest.getStartDate());
         demand.setEndDate(createDemandRequest.getEndDate());
         long totalDays = ChronoUnit.DAYS.between(createDemandRequest.getStartDate(), createDemandRequest.getEndDate());

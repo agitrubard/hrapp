@@ -17,7 +17,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     /*
     İnsan kaynakları rolündekiler sadece ekleyecek.
-    */
+     */
 
     @Autowired
     private CustomUserDetailService userDetailService;
@@ -32,7 +32,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/member/sign-up", "/member/log-in", "/member/password").permitAll()
+                .antMatchers("/member/sign-up", "/member/log-in", "/member/password", "/member/{id}/create-demand", "/member/{id}/demands").permitAll()
                 .anyRequest().authenticated()
                 .and().httpBasic();
 

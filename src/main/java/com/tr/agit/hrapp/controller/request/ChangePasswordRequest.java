@@ -9,15 +9,6 @@ public class ChangePasswordRequest implements Serializable {
     private String password;
     private String newPassword;
 
-    @Override
-    public String toString() {
-        return "ChangePasswordRequest{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", newPassword='" + newPassword + '\'' +
-                '}';
-    }
-
     public String getUsername() {
         return username;
     }
@@ -40,5 +31,14 @@ public class ChangePasswordRequest implements Serializable {
 
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    @Override
+    public String toString() {
+        return "ChangePasswordRequest{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", newPassword='" + newPassword + '\'' +
+                '}';
     }
 }

@@ -10,16 +10,6 @@ public class UpdateRequest implements Serializable {
     private String name;
     private String surname;
 
-    @Override
-    public String toString() {
-        return "UpdateRequest{" +
-                "email='" + email + '\'' +
-                ", username='" + username + '\'' +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                '}';
-    }
-
     public String getEmail() {
         return email;
     }
@@ -50,5 +40,15 @@ public class UpdateRequest implements Serializable {
 
     public void setSurname(String surname) {
         this.surname = surname;
+    }
+
+    @Override
+    public String toString() {
+        return "UpdateRequest{" +
+                "email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                '}';
     }
 }

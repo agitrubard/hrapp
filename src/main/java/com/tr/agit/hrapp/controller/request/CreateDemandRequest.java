@@ -9,18 +9,18 @@ import java.time.LocalDate;
 public class CreateDemandRequest  implements Serializable {
 
     private static final long serialVersionUID = 4439746317150162978L;
-    private DemandType demandType;
+    private DemandType type;
     @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate startDate;
     @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate endDate;
 
-    public DemandType getDemandType() {
-        return demandType;
+    public DemandType getType() {
+        return type;
     }
 
-    public void setDemandType(DemandType demandType) {
-        this.demandType = demandType;
+    public void setType(DemandType type) {
+        this.type = type;
     }
 
     public LocalDate getStartDate() {
@@ -37,5 +37,14 @@ public class CreateDemandRequest  implements Serializable {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    @Override
+    public String toString() {
+        return "CreateDemandRequest{" +
+                "type=" + type +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                '}';
     }
 }

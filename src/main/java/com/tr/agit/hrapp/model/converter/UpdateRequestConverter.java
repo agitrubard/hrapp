@@ -9,7 +9,7 @@ public class UpdateRequestConverter {
 
     }
 
-    public static MemberDto convert(UpdateRequest updateRequest){
+    public static MemberDto convert(UpdateRequest updateRequest) {
         MemberDto member = new MemberDto();
         member.setEmail(updateRequest.getEmail());
         member.setUsername(updateRequest.getUsername());
@@ -17,5 +17,4 @@ public class UpdateRequestConverter {
         member.setSurname(updateRequest.getSurname());
         return member;
     }
-
 }

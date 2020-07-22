@@ -8,14 +8,6 @@ public class LoginRequest implements Serializable {
     private String username;
     private String password;
 
-    @Override
-    public String toString() {
-        return "LoginRequest{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
-
     public String getUsername() {
         return username;
     }
@@ -30,5 +22,13 @@ public class LoginRequest implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "LoginRequest{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }
