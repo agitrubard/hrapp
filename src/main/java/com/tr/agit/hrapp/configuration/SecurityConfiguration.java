@@ -15,10 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableJpaRepositories(basePackageClasses = MemberRepository.class)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    /*
-    İnsan kaynakları rolündekiler sadece ekleyecek.
-     */
-
     @Autowired
     private CustomUserDetailService userDetailService;
 

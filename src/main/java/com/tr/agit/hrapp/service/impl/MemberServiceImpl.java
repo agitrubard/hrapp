@@ -57,7 +57,7 @@ public class MemberServiceImpl implements MemberService {
     public void changePassword(ChangePasswordRequest changePasswordRequest) throws Exception {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findByUsername(changePasswordRequest.getUsername());
 
-        if (memberEntityOptional.isPresent()) {
+        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
             boolean control = encoder.matches(changePasswordRequest.getPassword(), memberEntityOptional.get().getPassword());
             if (control) {
                 String newPassword = passwordEncoder(changePasswordRequest.getNewPassword());
