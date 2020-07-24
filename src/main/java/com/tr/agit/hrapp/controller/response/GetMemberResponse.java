@@ -4,27 +4,11 @@ import com.tr.agit.hrapp.model.enums.MemberStatus;
 
 public class GetMemberResponse {
 
-    private String email;
-    private String username;
     private String name;
     private String surname;
+    private String email;
+    private String username;
     private MemberStatus status;
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public String getName() {
         return name;
@@ -42,6 +26,22 @@ public class GetMemberResponse {
         this.surname = surname;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public MemberStatus getStatus() {
         return status;
     }
@@ -53,10 +53,10 @@ public class GetMemberResponse {
     @Override
     public String toString() {
         return "GetMemberResponse{" +
-                "email='" + email + '\'' +
-                ", username='" + username + '\'' +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
                 ", status=" + status +
                 '}';
     }

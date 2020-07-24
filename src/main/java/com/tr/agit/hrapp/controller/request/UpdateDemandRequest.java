@@ -1,17 +1,19 @@
-package com.tr.agit.hrapp.controller.response;
+package com.tr.agit.hrapp.controller.request;
 
-import com.tr.agit.hrapp.model.enums.DemandStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tr.agit.hrapp.model.enums.DemandType;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class GetDemandResponse {
+public class UpdateDemandRequest implements Serializable {
 
+    private static final long serialVersionUID = -4241921580209031521L;
     private DemandType type;
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate startDate;
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate endDate;
-    private long totalDays;
-    private DemandStatus status;
 
     public DemandType getType() {
         return type;
@@ -37,30 +39,12 @@ public class GetDemandResponse {
         this.endDate = endDate;
     }
 
-    public long getTotalDays() {
-        return totalDays;
-    }
-
-    public void setTotalDays(long totalDays) {
-        this.totalDays = totalDays;
-    }
-
-    public DemandStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(DemandStatus status) {
-        this.status = status;
-    }
-
     @Override
     public String toString() {
-        return "GetDemandResponse{" +
+        return "UpdateDemandRequest{" +
                 "type=" + type +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", totalDays=" + totalDays +
-                ", status=" + status +
                 '}';
     }
 }

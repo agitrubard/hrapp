@@ -3,7 +3,7 @@ package com.tr.agit.hrapp.controller;
 import com.tr.agit.hrapp.controller.request.ChangePasswordRequest;
 import com.tr.agit.hrapp.controller.request.LoginRequest;
 import com.tr.agit.hrapp.controller.request.SignupRequest;
-import com.tr.agit.hrapp.controller.request.UpdateRequest;
+import com.tr.agit.hrapp.controller.request.UpdateMemberRequest;
 import com.tr.agit.hrapp.controller.response.GetMemberResponse;
 import com.tr.agit.hrapp.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/member")
 public class MemberController {
+
     @Autowired
     MemberService memberService;
 
@@ -33,8 +34,8 @@ public class MemberController {
     }
 
     @PutMapping(value = "/{id}")
-    public void update(@PathVariable long id, @RequestBody UpdateRequest updateRequest) {
-        memberService.update(id, updateRequest);
+    public void update(@PathVariable long id, @RequestBody UpdateMemberRequest updateMemberRequest) {
+        memberService.update(id, updateMemberRequest);
     }
 
     @DeleteMapping(value = "/{id}")

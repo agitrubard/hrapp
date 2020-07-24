@@ -6,6 +6,5 @@ public enum RoleType {
     TEAM_LEAD,
     MANAGER,
     CTO,
-    CEO,
-    MEMBER
+    CEO
 }

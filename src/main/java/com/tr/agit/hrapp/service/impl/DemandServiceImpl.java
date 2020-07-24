@@ -1,8 +1,12 @@
 package com.tr.agit.hrapp.service.impl;
 
 import com.tr.agit.hrapp.controller.request.CreateDemandRequest;
+import com.tr.agit.hrapp.controller.request.UpdateDemandRequest;
+import com.tr.agit.hrapp.controller.request.UpdateDemandStatusRequest;
 import com.tr.agit.hrapp.controller.response.GetDemandResponse;
 import com.tr.agit.hrapp.model.converter.CreateDemandRequestConverter;
+import com.tr.agit.hrapp.model.converter.UpdateDemandRequestConverter;
+import com.tr.agit.hrapp.model.converter.UpdateDemandStatusRequestConverter;
 import com.tr.agit.hrapp.model.dto.DemandDto;
 import com.tr.agit.hrapp.model.entity.DemandEntity;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
@@ -28,31 +32,45 @@ public class DemandServiceImpl implements DemandService {
     @Override
     public void create(long id, CreateDemandRequest createDemandRequest) throws NullPointerException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
+
         if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
-            save(createDemandRequest, memberEntityOptional);
+            saveDemand(createDemandRequest, memberEntityOptional);
         } else {
             throw new NullPointerException("Member is not found or passive!");
         }
     }
 
     @Override
-    public List<GetDemandResponse> getById(long id) {
-        List<DemandEntity> demandEntities = demandRepository.findAll();
+    public void update(long memberId, UpdateDemandRequest updateDemandRequest, long demandId) {
+        Optional<MemberEntity> memberEntityOptional = memberRepository.findById(memberId);
+
+        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
+            updateDemand(updateDemandRequest, demandId);
+        } else {
+            throw new NullPointerException("Member is not found or passive!");
+        }
+    }
+
+    @Override
+    public void updateStatus(long memberId, UpdateDemandStatusRequest updateDemandStatusRequest, long demandId) {
+        Optional<MemberEntity> memberEntityOptional = memberRepository.findById(memberId);
+
+        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
+            updateDemandStatus(updateDemandStatusRequest, demandId);
+        } else {
+            throw new NullPointerException("Member is not found or passive!");
+        }
+    }
+
+    @Override
+    public List<GetDemandResponse> getByMemberId(long id) {
+        Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
+        List<DemandEntity> demandEntities = demandRepository.findByMemberId(memberEntityOptional);
+
         return getResponses(demandEntities);
     }
 
-    private GetDemandResponse getResponse(DemandEntity demandEntity) {
-        GetDemandResponse getDemandResponse = new GetDemandResponse();
-        getDemandResponse.setStartDate(demandEntity.getStartDate());
-        getDemandResponse.setEndDate(demandEntity.getEndDate());
-        getDemandResponse.setTotalDays(demandEntity.getTotalDays());
-        getDemandResponse.setType(demandEntity.getType());
-        getDemandResponse.setStatus(demandEntity.getStatus());
-
-        return getDemandResponse;
-    }
-
-    private void save(CreateDemandRequest createDemandRequest, Optional<MemberEntity> memberEntityOptional) {
+    private void saveDemand(CreateDemandRequest createDemandRequest, Optional<MemberEntity> memberEntityOptional) {
         DemandDto demand = CreateDemandRequestConverter.convert(createDemandRequest);
         DemandEntity demandEntity = new DemandEntity();
 
@@ -64,6 +82,49 @@ public class DemandServiceImpl implements DemandService {
         demandEntity.setStatus(demand.getStatus());
 
         demandRepository.save(demandEntity);
+    }
+
+    private void updateDemand(UpdateDemandRequest updateDemandRequest, long demandId) {
+        Optional<DemandEntity> demandEntityOptional = demandRepository.findById(demandId);
+
+        if (demandEntityOptional.isPresent()) {
+            DemandDto demand = UpdateDemandRequestConverter.convert(updateDemandRequest);
+
+            demandEntityOptional.get().setType(demand.getType());
+            demandEntityOptional.get().setStartDate(demand.getStartDate());
+            demandEntityOptional.get().setEndDate(demand.getEndDate());
+            demandEntityOptional.get().setTotalDays(demand.getTotalDays());
+
+            demandRepository.save(demandEntityOptional.get());
+        } else {
+            throw new NullPointerException("Demand is not found!");
+        }
+    }
+
+    private void updateDemandStatus(UpdateDemandStatusRequest updateDemandStatusRequest, long demandId) {
+        Optional<DemandEntity> demandEntityOptional = demandRepository.findById(demandId);
+
+        if (demandEntityOptional.isPresent()) {
+            DemandDto demand = UpdateDemandStatusRequestConverter.convert(updateDemandStatusRequest);
+
+            demandEntityOptional.get().setStatus(demand.getStatus());
+
+            demandRepository.save(demandEntityOptional.get());
+        } else {
+            throw new NullPointerException("Demand is not found!");
+        }
+    }
+
+    private GetDemandResponse getResponse(DemandEntity demandEntity) {
+        GetDemandResponse getDemandResponse = new GetDemandResponse();
+
+        getDemandResponse.setType(demandEntity.getType());
+        getDemandResponse.setStartDate(demandEntity.getStartDate());
+        getDemandResponse.setEndDate(demandEntity.getEndDate());
+        getDemandResponse.setTotalDays(demandEntity.getTotalDays());
+        getDemandResponse.setStatus(demandEntity.getStatus());
+
+        return getDemandResponse;
     }
 
     private List<GetDemandResponse> getResponses(List<DemandEntity> demandEntities) {

@@ -13,12 +13,14 @@ public class CreateDemandRequestConverter {
 
     public static DemandDto convert(CreateDemandRequest createDemandRequest) {
         DemandDto demand = new DemandDto();
+
         demand.setType(createDemandRequest.getType());
         demand.setStartDate(createDemandRequest.getStartDate());
         demand.setEndDate(createDemandRequest.getEndDate());
-        long totalDays = ChronoUnit.DAYS.between(createDemandRequest.getStartDate(), createDemandRequest.getEndDate());
+        long totalDays = ChronoUnit.DAYS.between(demand.getStartDate(), demand.getEndDate());
         demand.setTotalDays(totalDays);
         demand.setStatus(DemandStatus.WAITINGFORAPPRROVAL);
+
         return demand;
     }
 }

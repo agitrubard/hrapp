@@ -6,7 +6,7 @@ import com.tr.agit.hrapp.model.enums.DemandType;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-public class CreateDemandRequest  implements Serializable {
+public class CreateDemandRequest implements Serializable {
 
     private static final long serialVersionUID = 4439746317150162978L;
     private DemandType type;

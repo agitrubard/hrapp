@@ -3,15 +3,17 @@ package com.tr.agit.hrapp.model.dto;
 import com.tr.agit.hrapp.model.enums.DemandStatus;
 import com.tr.agit.hrapp.model.enums.DemandType;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class DemandDto {
+public class DemandDto implements Serializable {
 
+    private static final long serialVersionUID = -7996772191488623437L;
     private long memberId;
+    private DemandType type;
     private LocalDate startDate;
     private LocalDate endDate;
     private long totalDays;
-    private DemandType type;
     private DemandStatus status;
 
     public long getMemberId() {
@@ -20,6 +22,14 @@ public class DemandDto {
 
     public void setMemberId(long memberId) {
         this.memberId = memberId;
+    }
+
+    public DemandType getType() {
+        return type;
+    }
+
+    public void setType(DemandType type) {
+        this.type = type;
     }
 
     public LocalDate getStartDate() {
@@ -46,19 +56,23 @@ public class DemandDto {
         this.totalDays = totalDays;
     }
 
-    public DemandType getType() {
-        return type;
-    }
-
-    public void setType(DemandType type) {
-        this.type = type;
-    }
-
     public DemandStatus getStatus() {
         return status;
     }
 
     public void setStatus(DemandStatus status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "DemandDto{" +
+                "memberId=" + memberId +
+                ", type=" + type +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", totalDays=" + totalDays +
+                ", status=" + status +
+                '}';
     }
 }

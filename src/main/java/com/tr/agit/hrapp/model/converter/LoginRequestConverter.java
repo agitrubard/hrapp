@@ -10,8 +10,10 @@ public class LoginRequestConverter {
 
     public static MemberDto convert(LoginRequest loginRequest) {
         MemberDto member = new MemberDto();
+
         member.setUsername(loginRequest.getUsername());
         member.setPassword(loginRequest.getPassword());
+
         return member;
     }
 }

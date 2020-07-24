@@ -3,11 +3,11 @@ package com.tr.agit.hrapp.service.impl;
 import com.tr.agit.hrapp.controller.request.ChangePasswordRequest;
 import com.tr.agit.hrapp.controller.request.LoginRequest;
 import com.tr.agit.hrapp.controller.request.SignupRequest;
-import com.tr.agit.hrapp.controller.request.UpdateRequest;
+import com.tr.agit.hrapp.controller.request.UpdateMemberRequest;
 import com.tr.agit.hrapp.controller.response.GetMemberResponse;
 import com.tr.agit.hrapp.model.converter.LoginRequestConverter;
 import com.tr.agit.hrapp.model.converter.SignupRequestConverter;
-import com.tr.agit.hrapp.model.converter.UpdateRequestConverter;
+import com.tr.agit.hrapp.model.converter.UpdateMemberRequestConverter;
 import com.tr.agit.hrapp.model.dto.MemberDto;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
 import com.tr.agit.hrapp.model.enums.MemberStatus;
@@ -47,6 +47,7 @@ public class MemberServiceImpl implements MemberService {
 
         if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
             boolean control = encoder.matches(loginRequest.getPassword(), memberEntityOptional.get().getPassword());
+
             if (control) {
                 System.out.println("Successful.");
             }
@@ -59,6 +60,7 @@ public class MemberServiceImpl implements MemberService {
 
         if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
             boolean control = encoder.matches(changePasswordRequest.getPassword(), memberEntityOptional.get().getPassword());
+
             if (control) {
                 String newPassword = passwordEncoder(changePasswordRequest.getNewPassword());
                 memberEntityOptional.get().setPassword(newPassword);
@@ -74,6 +76,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void sendEmail(MemberEntity memberEntity, String tempPassword) {
         SimpleMailMessage message = new SimpleMailMessage();
+
         message.setFrom("admin@hrapp.com");
         message.setTo(memberEntity.getEmail());
         message.setSubject("Welcome to HRApp");
@@ -83,9 +86,10 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void update(long id, UpdateRequest updateRequest) {
-        MemberDto member = UpdateRequestConverter.convert(updateRequest);
+    public void update(long id, UpdateMemberRequest updateMemberRequest) {
+        MemberDto member = UpdateMemberRequestConverter.convert(updateMemberRequest);
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
+
         if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
             updateMember(member, memberEntityOptional);
         } else {
@@ -96,6 +100,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void delete(long id) {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
+
         if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
             deleteMember(memberEntityOptional);
         } else {
@@ -113,6 +118,7 @@ public class MemberServiceImpl implements MemberService {
     public GetMemberResponse getById(long id) {
         if (memberRepository.existsById(id)) {
             Optional<MemberEntity> memberEntity = memberRepository.findById(id);
+
             return getResponse(memberEntity.get());
         } else {
             return null;
@@ -131,6 +137,7 @@ public class MemberServiceImpl implements MemberService {
 
     private void saveMember(MemberDto member) {
         MemberEntity memberEntity = new MemberEntity();
+
         memberEntity.setEmail(member.getEmail());
         String username = emailToUsername(member.getEmail());
         memberEntity.setUsername(username);
@@ -141,6 +148,7 @@ public class MemberServiceImpl implements MemberService {
         memberEntity.setStatus(member.getStatus());
 
         memberRepository.save(memberEntity);
+
         sendEmail(memberEntity, tempPassword);
     }
 
@@ -154,15 +162,17 @@ public class MemberServiceImpl implements MemberService {
 
     private void deleteMember(Optional<MemberEntity> memberEntityOptional) {
         memberEntityOptional.get().setStatus(MemberStatus.PASSIVE);
+
         memberRepository.save(memberEntityOptional.get());
     }
 
     private GetMemberResponse getResponse(MemberEntity memberEntity) {
         GetMemberResponse getMemberResponse = new GetMemberResponse();
-        getMemberResponse.setEmail(memberEntity.getEmail());
-        getMemberResponse.setUsername(memberEntity.getUsername());
+
         getMemberResponse.setName(memberEntity.getName());
         getMemberResponse.setSurname(memberEntity.getSurname());
+        getMemberResponse.setEmail(memberEntity.getEmail());
+        getMemberResponse.setUsername(memberEntity.getUsername());
         getMemberResponse.setStatus(memberEntity.getStatus());
 
         return getMemberResponse;

@@ -2,7 +2,7 @@ package com.tr.agit.hrapp.controller.request;
 
 import java.io.Serializable;
 
-public class UpdateRequest implements Serializable {
+public class UpdateMemberRequest implements Serializable {
 
     private static final long serialVersionUID = 1635826584987288397L;
     private String email;

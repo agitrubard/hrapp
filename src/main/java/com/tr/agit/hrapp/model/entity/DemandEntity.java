@@ -19,6 +19,10 @@ public class DemandEntity {
     @ManyToOne(targetEntity = MemberEntity.class)
     private MemberEntity memberId;
 
+    @Column(name = "type", nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private DemandType type;
+
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
@@ -27,10 +31,6 @@ public class DemandEntity {
 
     @Column(name = "total_days", nullable = false)
     private long totalDays;
-
-    @Column(name = "type", nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private DemandType type;
 
     @Column(name = "status", nullable = false)
     @Enumerated(value = EnumType.STRING)
@@ -50,6 +50,14 @@ public class DemandEntity {
 
     public void setMemberId(MemberEntity memberId) {
         this.memberId = memberId;
+    }
+
+    public DemandType getType() {
+        return type;
+    }
+
+    public void setType(DemandType type) {
+        this.type = type;
     }
 
     public LocalDate getStartDate() {
@@ -76,14 +84,6 @@ public class DemandEntity {
         this.totalDays = totalDays;
     }
 
-    public DemandType getType() {
-        return type;
-    }
-
-    public void setType(DemandType type) {
-        this.type = type;
-    }
-
     public DemandStatus getStatus() {
         return status;
     }
@@ -97,10 +97,10 @@ public class DemandEntity {
         return "DemandEntity{" +
                 "id=" + id +
                 ", memberId=" + memberId +
+                ", type=" + type +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", totalTime=" + totalDays +
-                ", type=" + type +
+                ", totalDays=" + totalDays +
                 ", status=" + status +
                 '}';
     }

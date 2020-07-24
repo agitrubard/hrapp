@@ -1,6 +1,8 @@
 package com.tr.agit.hrapp.controller;
 
 import com.tr.agit.hrapp.controller.request.CreateDemandRequest;
+import com.tr.agit.hrapp.controller.request.UpdateDemandRequest;
+import com.tr.agit.hrapp.controller.request.UpdateDemandStatusRequest;
 import com.tr.agit.hrapp.controller.response.GetDemandResponse;
 import com.tr.agit.hrapp.service.DemandService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +22,18 @@ public class DemandController {
         demandService.create(id, createDemandRequest);
     }
 
+    @PutMapping(value = "/{memberId}/demand/{demandId}")
+    public void updateDemand(@PathVariable long memberId, @RequestBody UpdateDemandRequest updateDemandRequest, @PathVariable long demandId) {
+        demandService.update(memberId, updateDemandRequest, demandId);
+    }
+
+    @PutMapping(value = "/{memberId}/demand-status/{demandId}")
+    public void updateDemandStatus(@PathVariable long memberId, @RequestBody UpdateDemandStatusRequest updateDemandStatusRequest, @PathVariable long demandId) {
+        demandService.updateStatus(memberId, updateDemandStatusRequest, demandId);
+    }
+
     @GetMapping(value = "/{id}/demands")
-    public List<GetDemandResponse> getDemands(@PathVariable long id) {
-        return demandService.getById(id);
+    public List<GetDemandResponse> getDemandsById(@PathVariable long id) {
+        return demandService.getByMemberId(id);
     }
 }
