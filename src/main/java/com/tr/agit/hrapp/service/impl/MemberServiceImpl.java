@@ -5,6 +5,7 @@ import com.tr.agit.hrapp.controller.request.LoginRequest;
 import com.tr.agit.hrapp.controller.request.SignupRequest;
 import com.tr.agit.hrapp.controller.request.UpdateMemberRequest;
 import com.tr.agit.hrapp.controller.response.GetMemberResponse;
+import com.tr.agit.hrapp.model.converter.ChangePasswordRequestConverter;
 import com.tr.agit.hrapp.model.converter.LoginRequestConverter;
 import com.tr.agit.hrapp.model.converter.SignupRequestConverter;
 import com.tr.agit.hrapp.model.converter.UpdateMemberRequestConverter;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class MemberServiceImpl implements MemberService {
+
     @Autowired
     private JavaMailSender javaMailSender;
 
@@ -37,6 +39,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void create(SignupRequest signupRequest) throws Exception {
         MemberDto member = SignupRequestConverter.convert(signupRequest);
+
         save(member);
     }
 
@@ -56,18 +59,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void changePassword(ChangePasswordRequest changePasswordRequest) throws Exception {
-        Optional<MemberEntity> memberEntityOptional = memberRepository.findByUsername(changePasswordRequest.getUsername());
+        MemberDto member = ChangePasswordRequestConverter.convert(changePasswordRequest);
+        Optional<MemberEntity> memberEntityOptional = memberRepository.findByUsername(member.getUsername());
 
         if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
-            boolean control = encoder.matches(changePasswordRequest.getPassword(), memberEntityOptional.get().getPassword());
-
-            if (control) {
-                String newPassword = passwordEncoder(changePasswordRequest.getNewPassword());
-                memberEntityOptional.get().setPassword(newPassword);
-                memberRepository.save(memberEntityOptional.get());
-            } else {
-                throw new Exception("Password is not correct!");
-            }
+            changePasswordControl(member, memberEntityOptional);
         } else {
             throw new NullPointerException("Member is not found or deleted!");
         }
@@ -111,6 +107,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public List<GetMemberResponse> get() {
         List<MemberEntity> memberEntities = memberRepository.findAll();
+
         return getResponses(memberEntities);
     }
 
@@ -150,6 +147,18 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(memberEntity);
 
         sendEmail(memberEntity, tempPassword);
+    }
+
+    private void changePasswordControl(MemberDto member, Optional<MemberEntity> memberEntityOptional) throws Exception {
+        boolean control = encoder.matches(member.getPassword(), memberEntityOptional.get().getPassword());
+        if (control) {
+            String newPassword = passwordEncoder(member.getNewPassword());
+            memberEntityOptional.get().setPassword(newPassword);
+
+            memberRepository.save(memberEntityOptional.get());
+        } else {
+            throw new Exception("Password is not correct!");
+        }
     }
 
     private void updateMember(MemberDto member, Optional<MemberEntity> memberEntityOptional) {

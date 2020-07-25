@@ -3,9 +3,9 @@ package com.tr.agit.hrapp.model.converter;
 import com.tr.agit.hrapp.controller.request.ChangePasswordRequest;
 import com.tr.agit.hrapp.model.dto.MemberDto;
 
-public class PasswordChangeRequestConverter {
+public class ChangePasswordRequestConverter {
 
-    private PasswordChangeRequestConverter() {
+    private ChangePasswordRequestConverter() {
     }
 
     public static MemberDto convert(ChangePasswordRequest changePasswordRequest) {
