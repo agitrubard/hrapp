@@ -29,6 +29,9 @@ public class MemberEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @OneToOne(mappedBy = "memberId", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private RoleEntity role;
+
     @Column(name = "status", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private MemberStatus status;
@@ -46,6 +49,7 @@ public class MemberEntity {
         this.email = member.getEmail();
         this.username = member.getUsername();
         this.password = member.getPassword();
+        this.role = member.getRole();
         this.status = member.getStatus();
     }
 
@@ -97,6 +101,14 @@ public class MemberEntity {
         this.password = password;
     }
 
+    public RoleEntity getRole() {
+        return role;
+    }
+
+    public void setRole(RoleEntity role) {
+        this.role = role;
+    }
+
     public MemberStatus getStatus() {
         return status;
     }
@@ -114,6 +126,7 @@ public class MemberEntity {
                 ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", role=" + role +
                 ", status=" + status +
                 '}';
     }
