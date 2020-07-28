@@ -17,10 +17,11 @@ public class CustomUserDetails extends MemberEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getAuthorities()
-                .stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getAuthority()))
-                .collect(Collectors.toList());
+        List<GrantedAuthority> authorityList = new ArrayList<>();
+
+        authorityList.add(new SimpleGrantedAuthority("ROLE_" + super.getRole()));
+
+        return authorityList;
     }
 
     @Override
