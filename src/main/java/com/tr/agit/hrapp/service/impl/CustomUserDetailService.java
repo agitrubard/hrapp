@@ -1,6 +1,5 @@
 package com.tr.agit.hrapp.service.impl;
 
-import com.tr.agit.hrapp.model.CustomUserDetails;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
 import com.tr.agit.hrapp.model.entity.RoleEntity;
 import com.tr.agit.hrapp.repository.MemberRepository;
@@ -13,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -29,9 +29,10 @@ public class CustomUserDetailService implements UserDetailsService {
     }
 
     private static Collection<? extends GrantedAuthority> getAuthorities(Optional<MemberEntity> member) {
-        RoleEntity memberRole = member.map(CustomUserDetails::new).get().getRole();
-        Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(String.valueOf(memberRole));
-        return authorities;
+        RoleEntity memberRole = member.get().getRole();
+        if (memberRole != null) {
+            return AuthorityUtils.createAuthorityList("ROLE_" + memberRole.getType().name());
+        }
+        return Collections.emptyList();
     }
-
 }
