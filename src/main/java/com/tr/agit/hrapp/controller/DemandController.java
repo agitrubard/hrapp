@@ -18,17 +18,17 @@ public class DemandController {
     DemandService demandService;
 
     @PostMapping(value = "/{id}/create-demand")
-    public void createDemand(@PathVariable long id, @RequestBody CreateDemandRequest createDemandRequest) {
+    public void create(@PathVariable long id, @RequestBody CreateDemandRequest createDemandRequest) {
         demandService.create(id, createDemandRequest);
     }
 
     @PutMapping(value = "/{memberId}/demand/{demandId}")
-    public void updateDemand(@PathVariable long memberId, @RequestBody UpdateDemandRequest updateDemandRequest, @PathVariable long demandId) {
+    public void update(@PathVariable long memberId, @RequestBody UpdateDemandRequest updateDemandRequest, @PathVariable long demandId) {
         demandService.update(memberId, updateDemandRequest, demandId);
     }
 
     @PutMapping(value = "/{memberId}/demand-status/{demandId}")
-    public void updateDemandStatus(@PathVariable long memberId, @RequestBody UpdateDemandStatusRequest updateDemandStatusRequest, @PathVariable long demandId) {
+    public void updateStatus(@PathVariable long memberId, @RequestBody UpdateDemandStatusRequest updateDemandStatusRequest, @PathVariable long demandId) {
         demandService.updateStatus(memberId, updateDemandStatusRequest, demandId);
     }
 
