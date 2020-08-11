@@ -14,6 +14,9 @@ import com.tr.agit.hrapp.model.entity.MemberEntity;
 import com.tr.agit.hrapp.model.entity.RoleEntity;
 import com.tr.agit.hrapp.model.enums.MemberStatus;
 import com.tr.agit.hrapp.model.enums.RoleType;
+import com.tr.agit.hrapp.model.exception.MemberAlreadyExistsException;
+import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
+import com.tr.agit.hrapp.model.exception.PasswordNotCorrectException;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.repository.RoleRepository;
 import com.tr.agit.hrapp.service.MemberService;
@@ -56,7 +59,6 @@ public class MemberServiceImpl implements MemberService {
 
         memberRepository.save(memberEntity);
 
-
         RoleEntity roleEntity = new RoleEntity();
 
         roleEntity.setMemberId(memberEntity);
@@ -66,35 +68,39 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void create(SignupRequest signupRequest) throws Exception {
+    public void create(SignupRequest signupRequest) throws MemberAlreadyExistsException {
         MemberDto member = SignupRequestConverter.convert(signupRequest);
-
         save(member);
     }
 
     @Override
-    public void login(LoginRequest loginRequest) {
+    public void login(LoginRequest loginRequest) throws MemberNotFoundException, PasswordNotCorrectException {
         MemberDto member = LoginRequestConverter.convert(loginRequest);
         Optional<MemberEntity> memberEntityOptional = memberRepository.findByUsername(member.getUsername());
 
-        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
-            boolean control = encoder.matches(loginRequest.getPassword(), memberEntityOptional.get().getPassword());
+        boolean memberIsPresent = memberEntityOptional.isPresent();
+        boolean memberStatusIsActive = (memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE);
 
-            if (control) {
-                System.out.println("Successful.");
-            }
+        if (memberIsPresent && memberStatusIsActive) {
+            loginPasswordControl(loginRequest, memberEntityOptional);
+        } else {
+            throw new MemberNotFoundException();
         }
     }
 
     @Override
-    public void changePassword(ChangePasswordRequest changePasswordRequest) throws Exception {
+    public void changePassword(ChangePasswordRequest changePasswordRequest) throws MemberNotFoundException, PasswordNotCorrectException {
         MemberDto member = ChangePasswordRequestConverter.convert(changePasswordRequest);
+
         Optional<MemberEntity> memberEntityOptional = memberRepository.findByUsername(member.getUsername());
 
-        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
+        boolean memberIsPresent = memberEntityOptional.isPresent();
+        boolean memberStatusIsActive = memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE;
+
+        if (memberIsPresent && memberStatusIsActive) {
             changePasswordControl(member, memberEntityOptional);
         } else {
-            throw new NullPointerException("Member is not found or deleted!");
+            throw new MemberNotFoundException();
         }
     }
 
@@ -111,25 +117,32 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void update(long id, UpdateMemberRequest updateMemberRequest) {
+    public void update(long id, UpdateMemberRequest updateMemberRequest) throws MemberNotFoundException {
         MemberDto member = UpdateMemberRequestConverter.convert(updateMemberRequest);
+
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
 
-        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
+        boolean memberIsPresent = memberEntityOptional.isPresent();
+        boolean memberStatusIsActive = memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE;
+
+        if (memberIsPresent && memberStatusIsActive) {
             updateMember(member, memberEntityOptional);
         } else {
-            throw new NullPointerException("Member is not found or deleted!");
+            throw new MemberNotFoundException();
         }
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(long id) throws MemberNotFoundException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
 
-        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
+        boolean memberIsPresent = memberEntityOptional.isPresent();
+        boolean memberStatusIsActive = memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE;
+
+        if (memberIsPresent && memberStatusIsActive) {
             deleteMember(memberEntityOptional);
         } else {
-            throw new NullPointerException("Member is not found or deleted!");
+            throw new MemberNotFoundException();
         }
     }
 
@@ -141,23 +154,23 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public GetMemberResponse getById(long id) {
+    public GetMemberResponse getById(long id) throws MemberNotFoundException {
         if (memberRepository.existsById(id)) {
             Optional<MemberEntity> memberEntity = memberRepository.findById(id);
 
             return getResponse(memberEntity.get());
         } else {
-            return null;
+            throw new MemberNotFoundException();
         }
     }
 
-    private void save(MemberDto member) throws Exception {
+    private void save(MemberDto member) throws MemberAlreadyExistsException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findByEmail(member.getEmail());
 
         if (!(memberEntityOptional.isPresent())) {
             saveMember(member);
         } else {
-            throw new Exception("Member is already exists!");
+            throw new MemberAlreadyExistsException();
         }
     }
 
@@ -178,15 +191,24 @@ public class MemberServiceImpl implements MemberService {
         sendEmail(memberEntity, tempPassword);
     }
 
-    private void changePasswordControl(MemberDto member, Optional<MemberEntity> memberEntityOptional) throws Exception {
-        boolean control = encoder.matches(member.getPassword(), memberEntityOptional.get().getPassword());
-        if (control) {
+    private void changePasswordControl(MemberDto member, Optional<MemberEntity> memberEntityOptional) throws PasswordNotCorrectException {
+        boolean passwordControl = encoder.matches(member.getPassword(), memberEntityOptional.get().getPassword());
+
+        if (passwordControl) {
             String newPassword = passwordEncoder(member.getNewPassword());
             memberEntityOptional.get().setPassword(newPassword);
 
             memberRepository.save(memberEntityOptional.get());
         } else {
-            throw new Exception("Password is not correct!");
+            throw new PasswordNotCorrectException();
+        }
+    }
+
+    private void loginPasswordControl(LoginRequest loginRequest, Optional<MemberEntity> memberEntityOptional) throws PasswordNotCorrectException {
+        boolean passwordControl = encoder.matches(loginRequest.getPassword(), memberEntityOptional.get().getPassword());
+
+        if (!passwordControl) {
+            throw new PasswordNotCorrectException();
         }
     }
 
@@ -217,9 +239,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private List<GetMemberResponse> getResponses(List<MemberEntity> memberEntities) {
-        return memberEntities.stream()
-                .map(this::getResponse)
-                .collect(Collectors.toList());
+        return Optional.of(memberEntities.stream().map(this::getResponse).collect(Collectors.toList())).orElse(null);
     }
 
     private String emailToUsername(String email) {

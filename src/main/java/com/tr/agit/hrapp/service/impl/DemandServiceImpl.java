@@ -11,6 +11,8 @@ import com.tr.agit.hrapp.model.dto.DemandDto;
 import com.tr.agit.hrapp.model.entity.DemandEntity;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
 import com.tr.agit.hrapp.model.enums.MemberStatus;
+import com.tr.agit.hrapp.model.exception.DemandNotFoundException;
+import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
 import com.tr.agit.hrapp.repository.DemandRepository;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.service.DemandService;
@@ -31,44 +33,60 @@ public class DemandServiceImpl implements DemandService {
     DemandRepository demandRepository;
 
     @Override
-    public void create(long id, CreateDemandRequest createDemandRequest) throws NullPointerException {
+    public void create(long id, CreateDemandRequest createDemandRequest) throws MemberNotFoundException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
 
-        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
+        boolean memberIsPresent = memberEntityOptional.isPresent();
+        boolean memberStatusIsActive = (memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE);
+
+        if (memberIsPresent && memberStatusIsActive) {
             saveDemand(createDemandRequest, memberEntityOptional);
         } else {
-            throw new NullPointerException("Member is not found or passive!");
+            throw new MemberNotFoundException();
         }
     }
 
     @Override
-    public void update(long memberId, UpdateDemandRequest updateDemandRequest, long demandId) {
+    public void update(long memberId, UpdateDemandRequest updateDemandRequest, long demandId) throws MemberNotFoundException, DemandNotFoundException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(memberId);
 
-        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
+        boolean memberIsPresent = memberEntityOptional.isPresent();
+        boolean memberStatusIsActive = (memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE);
+
+        if (memberIsPresent && memberStatusIsActive) {
             updateDemand(updateDemandRequest, demandId);
         } else {
-            throw new NullPointerException("Member is not found or passive!");
+            throw new MemberNotFoundException();
         }
     }
 
     @Override
-    public void updateStatus(long memberId, UpdateDemandStatusRequest updateDemandStatusRequest, long demandId) {
+    public void updateStatus(long memberId, UpdateDemandStatusRequest updateDemandStatusRequest, long demandId) throws MemberNotFoundException, DemandNotFoundException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(memberId);
 
-        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
+        boolean memberIsPresent = memberEntityOptional.isPresent();
+        boolean memberStatusIsActive = (memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE);
+
+        if (memberIsPresent && memberStatusIsActive) {
             updateDemandStatus(updateDemandStatusRequest, demandId);
         } else {
-            throw new NullPointerException("Member is not found or passive!");
+            throw new MemberNotFoundException();
         }
     }
 
     @Override
-    public List<GetDemandResponse> getByMemberId(long id) {
+    public List<GetDemandResponse> getByMemberId(long id) throws MemberNotFoundException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
-        List<DemandEntity> demandEntities = demandRepository.findByMemberId(memberEntityOptional);
 
-        return getResponses(demandEntities);
+        boolean memberIsPresent = memberEntityOptional.isPresent();
+
+        if (memberIsPresent) {
+            List<DemandEntity> demandEntities = demandRepository.findByMemberId(memberEntityOptional);
+
+            return getResponses(demandEntities);
+        } else {
+            throw new MemberNotFoundException();
+        }
     }
 
     private void saveDemand(CreateDemandRequest createDemandRequest, Optional<MemberEntity> memberEntityOptional) {
@@ -85,10 +103,12 @@ public class DemandServiceImpl implements DemandService {
         demandRepository.save(demandEntity);
     }
 
-    private void updateDemand(UpdateDemandRequest updateDemandRequest, long demandId) {
+    private void updateDemand(UpdateDemandRequest updateDemandRequest, long demandId) throws DemandNotFoundException {
         Optional<DemandEntity> demandEntityOptional = demandRepository.findById(demandId);
 
-        if (demandEntityOptional.isPresent()) {
+        boolean demandIsPresent = demandEntityOptional.isPresent();
+
+        if (demandIsPresent) {
             DemandDto demand = UpdateDemandRequestConverter.convert(updateDemandRequest);
 
             demandEntityOptional.get().setType(demand.getType());
@@ -98,21 +118,23 @@ public class DemandServiceImpl implements DemandService {
 
             demandRepository.save(demandEntityOptional.get());
         } else {
-            throw new NullPointerException("Demand is not found!");
+            throw new DemandNotFoundException();
         }
     }
 
-    private void updateDemandStatus(UpdateDemandStatusRequest updateDemandStatusRequest, long demandId) {
+    private void updateDemandStatus(UpdateDemandStatusRequest updateDemandStatusRequest, long demandId) throws DemandNotFoundException {
         Optional<DemandEntity> demandEntityOptional = demandRepository.findById(demandId);
 
-        if (demandEntityOptional.isPresent()) {
+        boolean demandIsPresent = demandEntityOptional.isPresent();
+
+        if (demandIsPresent) {
             DemandDto demand = UpdateDemandStatusRequestConverter.convert(updateDemandStatusRequest);
 
             demandEntityOptional.get().setStatus(demand.getStatus());
 
             demandRepository.save(demandEntityOptional.get());
         } else {
-            throw new NullPointerException("Demand is not found!");
+            throw new DemandNotFoundException();
         }
     }
 
@@ -129,8 +151,6 @@ public class DemandServiceImpl implements DemandService {
     }
 
     private List<GetDemandResponse> getResponses(List<DemandEntity> demandEntities) {
-        return demandEntities.stream()
-                .map(this::getResponse)
-                .collect(Collectors.toList());
+        return Optional.of(demandEntities.stream().map(this::getResponse).collect(Collectors.toList())).orElse(null);
     }
 }

@@ -6,6 +6,8 @@ import com.tr.agit.hrapp.controller.request.SignupRequest;
 import com.tr.agit.hrapp.controller.request.UpdateMemberRequest;
 import com.tr.agit.hrapp.controller.response.GetMemberResponse;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
+import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
+import com.tr.agit.hrapp.model.exception.PasswordNotCorrectException;
 
 import java.util.List;
 
@@ -15,15 +17,15 @@ public interface MemberService {
 
     void sendEmail(MemberEntity memberEntity, String tempPassword);
 
-    void login(LoginRequest loginRequest);
+    void login(LoginRequest loginRequest) throws MemberNotFoundException, PasswordNotCorrectException;
 
     void changePassword(ChangePasswordRequest changePasswordRequest) throws Exception;
 
-    void update(long id, UpdateMemberRequest updateMemberRequest);
+    void update(long id, UpdateMemberRequest updateMemberRequest) throws MemberNotFoundException;
 
-    void delete(long id);
+    void delete(long id) throws MemberNotFoundException;
 
     List<GetMemberResponse> get();
 
-    GetMemberResponse getById(long id);
+    GetMemberResponse getById(long id) throws MemberNotFoundException;
 }

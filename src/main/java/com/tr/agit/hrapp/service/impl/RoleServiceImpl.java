@@ -7,6 +7,7 @@ import com.tr.agit.hrapp.model.dto.RoleDto;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
 import com.tr.agit.hrapp.model.entity.RoleEntity;
 import com.tr.agit.hrapp.model.enums.MemberStatus;
+import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.repository.RoleRepository;
 import com.tr.agit.hrapp.service.RoleService;
@@ -27,7 +28,7 @@ public class RoleServiceImpl implements RoleService {
     RoleRepository roleRepository;
 
     @Override
-    public void add(long id, AddRoleRequest addRoleRequest) {
+    public void add(long id, AddRoleRequest addRoleRequest) throws MemberNotFoundException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
 
         if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
@@ -39,20 +40,22 @@ public class RoleServiceImpl implements RoleService {
                 addRole(addRoleRequest, memberEntityOptional);
             }
         } else {
-            throw new NullPointerException("Member is not found or passive!");
+            throw new MemberNotFoundException();
         }
     }
 
     @Override
-    public GetRoleResponse getByMemberId(long id) {
+    public GetRoleResponse getByMemberId(long id) throws MemberNotFoundException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
 
-        if (roleRepository.existsByMemberId(memberEntityOptional)) {
+        boolean roleControl = roleRepository.existsByMemberId(memberEntityOptional);
+
+        if (roleControl) {
             Optional<RoleEntity> roleEntity = roleRepository.findByMemberId(memberEntityOptional);
 
             return getResponse(roleEntity.get());
         } else {
-            return null;
+            throw new MemberNotFoundException();
         }
     }
 
@@ -90,8 +93,6 @@ public class RoleServiceImpl implements RoleService {
     }
 
     private List<GetRoleResponse> getResponses(List<RoleEntity> roleEntities) {
-        return roleEntities.stream()
-                .map(this::getResponse)
-                .collect(Collectors.toList());
+        return Optional.of(roleEntities.stream().map(this::getResponse).collect(Collectors.toList())).orElse(null);
     }
 }
