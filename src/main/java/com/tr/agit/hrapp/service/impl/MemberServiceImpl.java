@@ -11,8 +11,11 @@ import com.tr.agit.hrapp.model.converter.SignupRequestConverter;
 import com.tr.agit.hrapp.model.converter.UpdateMemberRequestConverter;
 import com.tr.agit.hrapp.model.dto.MemberDto;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
+import com.tr.agit.hrapp.model.entity.RoleEntity;
 import com.tr.agit.hrapp.model.enums.MemberStatus;
+import com.tr.agit.hrapp.model.enums.RoleType;
 import com.tr.agit.hrapp.repository.MemberRepository;
+import com.tr.agit.hrapp.repository.RoleRepository;
 import com.tr.agit.hrapp.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -20,6 +23,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -34,7 +38,32 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     MemberRepository memberRepository;
 
+    @Autowired
+    RoleRepository roleRepository;
+
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    @PostConstruct
+    private void addAdmin() {
+        MemberEntity memberEntity = new MemberEntity();
+
+        memberEntity.setEmail("admin@hrapp.com");
+        memberEntity.setUsername("admin");
+        memberEntity.setPassword(passwordEncoder("admin"));
+        memberEntity.setName("Admin");
+        memberEntity.setSurname("HRApp");
+        memberEntity.setStatus(MemberStatus.ACTIVE);
+
+        memberRepository.save(memberEntity);
+
+
+        RoleEntity roleEntity = new RoleEntity();
+
+        roleEntity.setMemberId(memberEntity);
+        roleEntity.setType(RoleType.MANAGER);
+
+        roleRepository.save(roleEntity);
+    }
 
     @Override
     public void create(SignupRequest signupRequest) throws Exception {

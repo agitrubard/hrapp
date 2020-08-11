@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface DemandRepository extends JpaRepository<DemandEntity, Long> {
+
     List<DemandEntity> findByMemberId(Optional<MemberEntity> memberId);
 
     List<DemandEntity> findAll();

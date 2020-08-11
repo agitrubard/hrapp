@@ -19,7 +19,7 @@ public class CustomUserDetails extends MemberEntity implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorityList = new ArrayList<>();
 
-        authorityList.add(new SimpleGrantedAuthority("ROLE_" + super.getRole()));
+        authorityList.add(new SimpleGrantedAuthority("ROLE_" + super.getRole().getType().name()));
 
         return authorityList;
     }

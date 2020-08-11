@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class DemandServiceImpl implements DemandService {
+
     @Autowired
     MemberRepository memberRepository;
 

@@ -10,6 +10,7 @@ import com.tr.agit.hrapp.model.entity.MemberEntity;
 import java.util.List;
 
 public interface MemberService {
+
     void create(SignupRequest signupRequest) throws Exception;
 
     void sendEmail(MemberEntity memberEntity, String tempPassword);

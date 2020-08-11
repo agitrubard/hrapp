@@ -6,6 +6,7 @@ import com.tr.agit.hrapp.controller.response.GetRoleResponse;
 import java.util.List;
 
 public interface RoleService {
+
     void add(long id, AddRoleRequest addRoleRequest);
 
     List<GetRoleResponse> get();
