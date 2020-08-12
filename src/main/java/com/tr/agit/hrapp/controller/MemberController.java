@@ -46,7 +46,7 @@ public class MemberController {
         memberService.delete(id);
     }
 
-    @GetMapping(value = "/") //pagination -> page : 0 - limit 10
+    @GetMapping(value = "/")//pagination -> page : 0 - limit 10
     public List<GetMemberResponse> getMembers() {
         return memberService.get();
     }
