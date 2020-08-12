@@ -140,7 +140,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    @Scheduled(cron = "0 0 9 * * *", zone = "Europe/Istanbul")
+    @Scheduled(cron = "0 0 9 * * *", zone = "Europe/Istanbul") //"*/5 * * * * *"
     public void sendBirthdayMessage() {
         List<MemberEntity> memberEntities = memberRepository.findAllByBirthdate(LocalDate.now());
 
