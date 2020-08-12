@@ -12,9 +12,10 @@ public class SignupRequestConverter {
     public static MemberDto convert(SignupRequest signupRequest) {
         MemberDto member = new MemberDto();
 
-        member.setEmail(signupRequest.getEmail());
         member.setName(signupRequest.getName());
         member.setSurname(signupRequest.getSurname());
+        member.setEmail(signupRequest.getEmail());
+        member.setBirthdate(signupRequest.getBirthdate());
         member.setStatus(MemberStatus.ACTIVE);
 
         return member;

@@ -6,6 +6,7 @@ import com.tr.agit.hrapp.controller.request.SignupRequest;
 import com.tr.agit.hrapp.controller.request.UpdateMemberRequest;
 import com.tr.agit.hrapp.controller.response.GetMemberResponse;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
+import com.tr.agit.hrapp.model.exception.MemberAlreadyExistsException;
 import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
 import com.tr.agit.hrapp.model.exception.PasswordNotCorrectException;
 
@@ -13,9 +14,7 @@ import java.util.List;
 
 public interface MemberService {
 
-    void create(SignupRequest signupRequest) throws Exception;
-
-    void sendEmail(MemberEntity memberEntity, String tempPassword);
+    void create(SignupRequest signupRequest) throws MemberAlreadyExistsException;
 
     void login(LoginRequest loginRequest) throws MemberNotFoundException, PasswordNotCorrectException;
 
@@ -28,4 +27,8 @@ public interface MemberService {
     List<GetMemberResponse> get();
 
     GetMemberResponse getById(long id) throws MemberNotFoundException;
+
+    void sendPersonalInformationMessage(MemberEntity memberEntity, String tempPassword);
+
+    void sendBirthdayMessage();
 }

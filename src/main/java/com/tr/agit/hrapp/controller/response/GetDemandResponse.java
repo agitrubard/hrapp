@@ -1,5 +1,6 @@
 package com.tr.agit.hrapp.controller.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tr.agit.hrapp.model.enums.DemandStatus;
 import com.tr.agit.hrapp.model.enums.DemandType;
 
@@ -8,7 +9,9 @@ import java.time.LocalDate;
 public class GetDemandResponse {
 
     private DemandType type;
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate startDate;
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate endDate;
     private long totalDays;
     private DemandStatus status;

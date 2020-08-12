@@ -16,6 +16,7 @@ public class UpdateMemberRequestConverter {
         member.setUsername(updateMemberRequest.getUsername());
         member.setName(updateMemberRequest.getName());
         member.setSurname(updateMemberRequest.getSurname());
+        member.setBirthdate(updateMemberRequest.getBirthdate());
 
         return member;
     }

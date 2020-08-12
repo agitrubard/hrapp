@@ -5,6 +5,7 @@ import com.tr.agit.hrapp.controller.request.LoginRequest;
 import com.tr.agit.hrapp.controller.request.SignupRequest;
 import com.tr.agit.hrapp.controller.request.UpdateMemberRequest;
 import com.tr.agit.hrapp.controller.response.GetMemberResponse;
+import com.tr.agit.hrapp.model.exception.MemberAlreadyExistsException;
 import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
 import com.tr.agit.hrapp.model.exception.PasswordNotCorrectException;
 import com.tr.agit.hrapp.service.MemberService;
@@ -21,7 +22,7 @@ public class MemberController {
     MemberService memberService;
 
     @PostMapping(value = "/sign-up")
-    public void signUp(@RequestBody SignupRequest signupRequest) throws Exception {
+    public void signUp(@RequestBody SignupRequest signupRequest) throws MemberAlreadyExistsException {
         memberService.create(signupRequest);
     }
 

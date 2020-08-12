@@ -11,9 +11,7 @@ import com.tr.agit.hrapp.model.converter.SignupRequestConverter;
 import com.tr.agit.hrapp.model.converter.UpdateMemberRequestConverter;
 import com.tr.agit.hrapp.model.dto.MemberDto;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
-import com.tr.agit.hrapp.model.entity.RoleEntity;
 import com.tr.agit.hrapp.model.enums.MemberStatus;
-import com.tr.agit.hrapp.model.enums.RoleType;
 import com.tr.agit.hrapp.model.exception.MemberAlreadyExistsException;
 import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
 import com.tr.agit.hrapp.model.exception.PasswordNotCorrectException;
@@ -23,10 +21,11 @@ import com.tr.agit.hrapp.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -45,27 +44,6 @@ public class MemberServiceImpl implements MemberService {
     RoleRepository roleRepository;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-    @PostConstruct
-    private void addAdmin() {
-        MemberEntity memberEntity = new MemberEntity();
-
-        memberEntity.setEmail("admin@hrapp.com");
-        memberEntity.setUsername("admin");
-        memberEntity.setPassword(passwordEncoder("admin"));
-        memberEntity.setName("Admin");
-        memberEntity.setSurname("HRApp");
-        memberEntity.setStatus(MemberStatus.ACTIVE);
-
-        memberRepository.save(memberEntity);
-
-        RoleEntity roleEntity = new RoleEntity();
-
-        roleEntity.setMemberId(memberEntity);
-        roleEntity.setType(RoleType.MANAGER);
-
-        roleRepository.save(roleEntity);
-    }
 
     @Override
     public void create(SignupRequest signupRequest) throws MemberAlreadyExistsException {
@@ -102,18 +80,6 @@ public class MemberServiceImpl implements MemberService {
         } else {
             throw new MemberNotFoundException();
         }
-    }
-
-    @Override
-    public void sendEmail(MemberEntity memberEntity, String tempPassword) {
-        SimpleMailMessage message = new SimpleMailMessage();
-
-        message.setFrom("admin@hrapp.com");
-        message.setTo(memberEntity.getEmail());
-        message.setSubject("Welcome to HRApp");
-        message.setText("Username : " + memberEntity.getUsername() + "\nTemporary Password : " + tempPassword);
-
-        javaMailSender.send(message);
     }
 
     @Override
@@ -164,6 +130,29 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
+    @Override
+    public void sendPersonalInformationMessage(MemberEntity memberEntity, String tempPassword) {
+        String to = memberEntity.getEmail();
+        String subject = "Welcome to HRApp";
+        String text = "Username : " + memberEntity.getUsername() + "\nTemporary Password : " + tempPassword;
+
+        sendMail(to, subject, text);
+    }
+
+    @Override
+    @Scheduled(cron = "*/60 * * * * *", zone = "Europe/Istanbul")
+    public void sendBirthdayMessage() {
+        List<MemberEntity> memberEntities = memberRepository.findAllByBirthdate(LocalDate.now());
+
+        for (MemberEntity member : memberEntities) {
+            String to = member.getEmail();
+            String subject = "Happy Birthday!";
+            String text = "Happy birthday to you " + member.getName() + "!";
+
+            sendMail(to, subject, text);
+        }
+    }
+
     private void save(MemberDto member) throws MemberAlreadyExistsException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findByEmail(member.getEmail());
 
@@ -184,11 +173,12 @@ public class MemberServiceImpl implements MemberService {
         memberEntity.setPassword(passwordEncoder(tempPassword));
         memberEntity.setName(member.getName());
         memberEntity.setSurname(member.getSurname());
+        memberEntity.setBirthdate(member.getBirthdate());
         memberEntity.setStatus(member.getStatus());
 
         memberRepository.save(memberEntity);
 
-        sendEmail(memberEntity, tempPassword);
+        sendPersonalInformationMessage(memberEntity, tempPassword);
     }
 
     private void changePasswordControl(MemberDto member, Optional<MemberEntity> memberEntityOptional) throws PasswordNotCorrectException {
@@ -233,6 +223,7 @@ public class MemberServiceImpl implements MemberService {
         getMemberResponse.setSurname(memberEntity.getSurname());
         getMemberResponse.setEmail(memberEntity.getEmail());
         getMemberResponse.setUsername(memberEntity.getUsername());
+        getMemberResponse.setBirthdate(memberEntity.getBirthdate());
         getMemberResponse.setStatus(memberEntity.getStatus());
 
         return getMemberResponse;
@@ -240,6 +231,17 @@ public class MemberServiceImpl implements MemberService {
 
     private List<GetMemberResponse> getResponses(List<MemberEntity> memberEntities) {
         return Optional.of(memberEntities.stream().map(this::getResponse).collect(Collectors.toList())).orElse(null);
+    }
+
+    private void sendMail(String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setFrom("admin@hrapp.com");
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+
+        javaMailSender.send(message);
     }
 
     private String emailToUsername(String email) {

@@ -1,6 +1,9 @@
 package com.tr.agit.hrapp.controller.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
+import java.time.LocalDate;
 
 public class SignupRequest implements Serializable {
 
@@ -8,6 +11,8 @@ public class SignupRequest implements Serializable {
     private String email;
     private String name;
     private String surname;
+    @JsonFormat(pattern = "dd.MM.yyyy")
+    private LocalDate birthdate;
 
     public String getEmail() {
         return email;
@@ -33,12 +38,21 @@ public class SignupRequest implements Serializable {
         this.surname = surname;
     }
 
+    public LocalDate getBirthdate() {
+        return birthdate;
+    }
+
+    public void setBirthdate(LocalDate birthdate) {
+        this.birthdate = birthdate;
+    }
+
     @Override
     public String toString() {
         return "SignupRequest{" +
                 "email='" + email + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
+                ", birthdate=" + birthdate +
                 '}';
     }
 }
