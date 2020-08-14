@@ -257,9 +257,7 @@ public class MemberServiceImpl implements MemberService {
         boolean monthControl = (birthdate.getMonthValue() == LocalDate.now().getMonthValue());
         boolean dayControl = (birthdate.getDayOfMonth() == LocalDate.now().getDayOfMonth());
 
-        if (monthControl) {
-            return dayControl;
-        }
+        if (monthControl) return dayControl;
         return false;
     }
 
