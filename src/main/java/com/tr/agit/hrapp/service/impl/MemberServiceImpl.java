@@ -142,14 +142,18 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Scheduled(cron = "0 0 9 * * *", zone = "Europe/Istanbul") //"*/5 * * * * *"
     public void sendBirthdayMessage() {
-        List<MemberEntity> memberEntities = memberRepository.findAllByBirthdate(LocalDate.now());
+        List<MemberEntity> memberEntities = memberRepository.findAll();
 
         for (MemberEntity member : memberEntities) {
-            String to = member.getEmail();
-            String subject = "Happy Birthday!";
-            String text = "Happy birthday to you " + member.getName() + "!";
+            boolean dateControl = birthdateControl(member.getBirthdate());
 
-            sendMail(to, subject, text);
+            if (dateControl) {
+                String to = member.getEmail();
+                String subject = "Happy Birthday!";
+                String text = "Happy birthday to you " + member.getName() + "!";
+
+                sendMail(to, subject, text);
+            }
         }
     }
 
@@ -179,6 +183,11 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(memberEntity);
 
         sendPersonalInformationMessage(memberEntity, tempPassword);
+    }
+
+    private String emailToUsername(String email) {
+        String[] str = email.split("@");
+        return str[0];
     }
 
     private void changePasswordControl(MemberDto member, Optional<MemberEntity> memberEntityOptional) throws PasswordNotCorrectException {
@@ -244,9 +253,14 @@ public class MemberServiceImpl implements MemberService {
         javaMailSender.send(message);
     }
 
-    private String emailToUsername(String email) {
-        String[] str = email.split("@");
-        return str[0];
+    private boolean birthdateControl(LocalDate birthdate) {
+        boolean monthControl = (birthdate.getMonthValue() == LocalDate.now().getMonthValue());
+        boolean dayControl = (birthdate.getDayOfMonth() == LocalDate.now().getDayOfMonth());
+
+        if (monthControl) {
+            return dayControl;
+        }
+        return false;
     }
 
     private int generatePassword() {
