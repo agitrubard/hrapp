@@ -101,8 +101,8 @@ public class ResignServiceImpl implements ResignService {
     public void sendResignRequestAcceptedMessage(ResignEntity resignEntity) {
         sendMail("admin@hrapp.com", resignEntity.getMember().getEmail(),
                 "Your Resignation Request Accepted!",
-                "Start Working Date : " + resignEntity.getMember().getStartWorkingDate() +
-                        "\nEnd Working Date : " + resignEntity.getResignDate() +
+                "Start Working Date : " + resignEntity.getMember().getStartWorkingDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
+                        "\nEnd Working Date : " + resignEntity.getResignDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
                         "\nTotal Working Days : " + resignEntity.getTotalWorkingDays() +
                         "\nResign Status : " + resignEntity.getStatus());
     }
@@ -111,8 +111,8 @@ public class ResignServiceImpl implements ResignService {
     public void sendResignRequestRejectedMessage(ResignEntity resignEntity) {
         sendMail("admin@hrapp.com", resignEntity.getMember().getEmail(),
                 "Your Resignation Request Rejected!",
-                "Start Working Date : " + resignEntity.getMember().getStartWorkingDate() +
-                        "\nResign Date : " + resignEntity.getResignDate() +
+                "Start Working Date : " + resignEntity.getMember().getStartWorkingDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
+                        "\nResign Date : " + resignEntity.getResignDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
                         "\nTotal Working Days : " + resignEntity.getTotalWorkingDays() +
                         "\nResign Status : " + resignEntity.getStatus());
     }
