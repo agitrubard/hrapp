@@ -24,11 +24,14 @@ public class MemberEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "start_working_date", nullable = false)
+    private LocalDate startWorkingDate;
+
     @Column(name = "status", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private MemberStatus status;
 
-    @OneToOne(mappedBy = "memberId", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private RoleEntity role;
 
     @Column(name = "name", nullable = false)
@@ -40,8 +43,11 @@ public class MemberEntity {
     @Column(name = "birthdate", nullable = false)
     private LocalDate birthdate;
 
-    @OneToMany(mappedBy = "memberId", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<DemandEntity> demands;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<PermissionEntity> permissions;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private ResignEntity resign;
 
     public MemberEntity() {
     }
@@ -51,11 +57,13 @@ public class MemberEntity {
         this.email = member.getEmail();
         this.username = member.getUsername();
         this.password = member.getPassword();
+        this.startWorkingDate = member.getStartWorkingDate();
         this.status = member.getStatus();
         this.role = member.getRole();
         this.name = member.getName();
         this.surname = member.getSurname();
         this.birthdate = member.getBirthdate();
+        this.resign = member.getResign();
     }
 
     public long getId() {
@@ -88,6 +96,14 @@ public class MemberEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public LocalDate getStartWorkingDate() {
+        return startWorkingDate;
+    }
+
+    public void setStartWorkingDate(LocalDate startWorkingDate) {
+        this.startWorkingDate = startWorkingDate;
     }
 
     public MemberStatus getStatus() {
@@ -130,6 +146,14 @@ public class MemberEntity {
         this.birthdate = birthdate;
     }
 
+    public ResignEntity getResign() {
+        return resign;
+    }
+
+    public void setResign(ResignEntity resign) {
+        this.resign = resign;
+    }
+
     @Override
     public String toString() {
         return "MemberEntity{" +
@@ -137,11 +161,13 @@ public class MemberEntity {
                 ", email='" + email + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", startWorkingDate=" + startWorkingDate +
                 ", status=" + status +
                 ", role=" + role +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", birthdate=" + birthdate +
+                ", resign=" + resign +
                 '}';
     }
 }

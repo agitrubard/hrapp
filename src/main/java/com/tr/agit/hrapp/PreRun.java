@@ -30,6 +30,7 @@ public class PreRun {
 
         memberEntity.setEmail("admin@hrapp.com");
         memberEntity.setUsername("admin");
+        memberEntity.setStartWorkingDate(LocalDate.now());
         memberEntity.setPassword(passwordEncoder());
         memberEntity.setName("Admin");
         memberEntity.setSurname("HRApp");
@@ -40,7 +41,7 @@ public class PreRun {
 
         RoleEntity roleEntity = new RoleEntity();
 
-        roleEntity.setMemberId(memberEntity);
+        roleEntity.setMember(memberEntity);
         roleEntity.setType(RoleType.MANAGER);
 
         roleRepository.save(roleEntity);

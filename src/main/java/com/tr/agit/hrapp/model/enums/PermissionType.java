@@ -1,6 +1,6 @@
 package com.tr.agit.hrapp.model.enums;
 
-public enum DemandType {
+public enum PermissionType {
 
     ANNUAL_LEAVE,
     CASUAL_LEAVE,

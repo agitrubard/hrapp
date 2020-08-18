@@ -4,15 +4,33 @@ import com.tr.agit.hrapp.model.enums.RoleType;
 
 public class GetRoleResponse {
 
-    private String username;
+    private long memberId;
+    private String name;
+    private String surname;
     private RoleType type;
 
-    public String getUsername() {
-        return username;
+    public long getMemberId(long id) {
+        return memberId;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setMemberId(long memberId) {
+        this.memberId = memberId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     public RoleType getType() {
@@ -26,7 +44,9 @@ public class GetRoleResponse {
     @Override
     public String toString() {
         return "GetRoleResponse{" +
-                "username='" + username + '\'' +
+                "memberId=" + memberId +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
                 ", type=" + type +
                 '}';
     }

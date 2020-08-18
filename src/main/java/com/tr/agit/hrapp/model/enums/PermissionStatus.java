@@ -1,6 +1,6 @@
 package com.tr.agit.hrapp.model.enums;
 
-public enum DemandStatus {
+public enum PermissionStatus {
 
     WAITINGFORAPPRROVAL,
     ACCEPTED,

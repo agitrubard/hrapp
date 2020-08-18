@@ -1,40 +1,40 @@
 package com.tr.agit.hrapp.model.entity;
 
-import com.tr.agit.hrapp.model.enums.DemandStatus;
-import com.tr.agit.hrapp.model.enums.DemandType;
+import com.tr.agit.hrapp.model.enums.PermissionStatus;
+import com.tr.agit.hrapp.model.enums.PermissionType;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "demands")
-public class DemandEntity {
+@Table(name = "permissions")
+public class PermissionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false, unique = true)
     private long id;
 
-    @JoinColumn(name = "member_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(targetEntity = MemberEntity.class)
-    private MemberEntity memberId;
-
     @Column(name = "type", nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private DemandType type;
+    private PermissionType type;
 
-    @Column(name = "start_date", nullable = false)
+    @Column(name = "start_working_date", nullable = false)
     private LocalDate startDate;
 
-    @Column(name = "end_date", nullable = false)
+    @Column(name = "end_working_date", nullable = false)
     private LocalDate endDate;
 
-    @Column(name = "total_days", nullable = false)
+    @Column(name = "total_working_days", nullable = false)
     private long totalDays;
 
     @Column(name = "status", nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private DemandStatus status;
+    private PermissionStatus status;
+
+    @JoinColumn(name = "member", referencedColumnName = "id", nullable = false)
+    @ManyToOne(targetEntity = MemberEntity.class)
+    private MemberEntity member;
 
     public long getId() {
         return id;
@@ -44,19 +44,11 @@ public class DemandEntity {
         this.id = id;
     }
 
-    public MemberEntity getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(MemberEntity memberId) {
-        this.memberId = memberId;
-    }
-
-    public DemandType getType() {
+    public PermissionType getType() {
         return type;
     }
 
-    public void setType(DemandType type) {
+    public void setType(PermissionType type) {
         this.type = type;
     }
 
@@ -84,24 +76,32 @@ public class DemandEntity {
         this.totalDays = totalDays;
     }
 
-    public DemandStatus getStatus() {
+    public PermissionStatus getStatus() {
         return status;
     }
 
-    public void setStatus(DemandStatus status) {
+    public void setStatus(PermissionStatus status) {
         this.status = status;
+    }
+
+    public MemberEntity getMember() {
+        return member;
+    }
+
+    public void setMember(MemberEntity member) {
+        this.member = member;
     }
 
     @Override
     public String toString() {
-        return "DemandEntity{" +
+        return "PermissionEntity{" +
                 "id=" + id +
-                ", memberId=" + memberId +
                 ", type=" + type +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", totalDays=" + totalDays +
                 ", status=" + status +
+                ", member=" + member +
                 '}';
     }
 }

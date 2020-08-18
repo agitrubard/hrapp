@@ -10,6 +10,7 @@ public class MemberDto implements Serializable {
     private static final long serialVersionUID = 5601565721402723456L;
     private String email;
     private String username;
+    private LocalDate startWorkingDate;
     private MemberStatus status;
     private String password;
     private String newPassword;
@@ -31,6 +32,14 @@ public class MemberDto implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public LocalDate getStartWorkingDate() {
+        return startWorkingDate;
+    }
+
+    public void setStartWorkingDate(LocalDate startWorkingDate) {
+        this.startWorkingDate = startWorkingDate;
     }
 
     public MemberStatus getStatus() {
@@ -86,6 +95,7 @@ public class MemberDto implements Serializable {
         return "MemberDto{" +
                 "email='" + email + '\'' +
                 ", username='" + username + '\'' +
+                ", startWorkingDate=" + startWorkingDate +
                 ", status=" + status +
                 ", password='" + password + '\'' +
                 ", newPassword='" + newPassword + '\'' +

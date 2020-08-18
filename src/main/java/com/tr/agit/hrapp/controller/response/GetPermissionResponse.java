@@ -1,34 +1,26 @@
-package com.tr.agit.hrapp.model.dto;
+package com.tr.agit.hrapp.controller.response;
 
-import com.tr.agit.hrapp.model.enums.DemandStatus;
-import com.tr.agit.hrapp.model.enums.DemandType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.tr.agit.hrapp.model.enums.PermissionStatus;
+import com.tr.agit.hrapp.model.enums.PermissionType;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
-public class DemandDto implements Serializable {
+public class GetPermissionResponse {
 
-    private static final long serialVersionUID = -7996772191488623437L;
-    private long memberId;
-    private DemandType type;
+    private PermissionType type;
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate startDate;
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate endDate;
     private long totalDays;
-    private DemandStatus status;
+    private PermissionStatus status;
 
-    public long getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(long memberId) {
-        this.memberId = memberId;
-    }
-
-    public DemandType getType() {
+    public PermissionType getType() {
         return type;
     }
 
-    public void setType(DemandType type) {
+    public void setType(PermissionType type) {
         this.type = type;
     }
 
@@ -56,19 +48,18 @@ public class DemandDto implements Serializable {
         this.totalDays = totalDays;
     }
 
-    public DemandStatus getStatus() {
+    public PermissionStatus getStatus() {
         return status;
     }
 
-    public void setStatus(DemandStatus status) {
+    public void setStatus(PermissionStatus status) {
         this.status = status;
     }
 
     @Override
     public String toString() {
-        return "DemandDto{" +
-                "memberId=" + memberId +
-                ", type=" + type +
+        return "GetPermissionResponse{" +
+                "type=" + type +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", totalDays=" + totalDays +

@@ -1,9 +1,6 @@
 package com.tr.agit.hrapp.service.impl;
 
-import com.tr.agit.hrapp.controller.request.ChangePasswordRequest;
-import com.tr.agit.hrapp.controller.request.LoginRequest;
-import com.tr.agit.hrapp.controller.request.SignupRequest;
-import com.tr.agit.hrapp.controller.request.UpdateMemberRequest;
+import com.tr.agit.hrapp.controller.request.*;
 import com.tr.agit.hrapp.controller.response.GetMemberResponse;
 import com.tr.agit.hrapp.model.converter.ChangePasswordRequestConverter;
 import com.tr.agit.hrapp.model.converter.LoginRequestConverter;
@@ -19,6 +16,8 @@ import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.repository.RoleRepository;
 import com.tr.agit.hrapp.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -35,13 +34,13 @@ import java.util.stream.Collectors;
 public class MemberServiceImpl implements MemberService {
 
     @Autowired
-    private JavaMailSender javaMailSender;
-
-    @Autowired
     MemberRepository memberRepository;
 
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -113,15 +112,19 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<GetMemberResponse> get() {
-        List<MemberEntity> memberEntities = memberRepository.findAll();
+    public List<GetMemberResponse> getMembers(PaginationRequest paginationRequest) {
+        Page<MemberEntity> memberEntities = memberRepository.findAll(
+                PageRequest.of(paginationRequest.getPage(), paginationRequest.getLimit(), null));
 
-        return getResponses(memberEntities);
+        return getResponses(memberEntities.getContent());
     }
 
     @Override
-    public GetMemberResponse getById(long id) throws MemberNotFoundException {
-        if (memberRepository.existsById(id)) {
+    public GetMemberResponse getMemberById(long id) throws MemberNotFoundException {
+
+        boolean memberIsPresent = memberRepository.existsById(id);
+
+        if (memberIsPresent) {
             Optional<MemberEntity> memberEntity = memberRepository.findById(id);
 
             return getResponse(memberEntity.get());
@@ -132,11 +135,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void sendPersonalInformationMessage(MemberEntity memberEntity, String tempPassword) {
-        String to = memberEntity.getEmail();
-        String subject = "Welcome to HRApp";
-        String text = "Username : " + memberEntity.getUsername() + "\nTemporary Password : " + tempPassword;
-
-        sendMail(to, subject, text);
+        sendMail(memberEntity.getEmail(), "Welcome to HRApp", "Username : " + memberEntity.getUsername() + "\nTemporary Password : " + tempPassword);
     }
 
     @Override
@@ -146,13 +145,8 @@ public class MemberServiceImpl implements MemberService {
 
         for (MemberEntity member : memberEntities) {
             boolean dateControl = birthdateControl(member.getBirthdate());
-
             if (dateControl) {
-                String to = member.getEmail();
-                String subject = "Happy Birthday!";
-                String text = "Happy birthday to you " + member.getName() + "!";
-
-                sendMail(to, subject, text);
+                sendMail(member.getEmail(), "Happy Birthday!", "Happy birthday to you " + member.getName() + "!");
             }
         }
     }
@@ -160,7 +154,9 @@ public class MemberServiceImpl implements MemberService {
     private void save(MemberDto member) throws MemberAlreadyExistsException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findByEmail(member.getEmail());
 
-        if (!(memberEntityOptional.isPresent())) {
+        boolean memberIsPresent = memberEntityOptional.isPresent();
+
+        if (!(memberIsPresent)) {
             saveMember(member);
         } else {
             throw new MemberAlreadyExistsException();
@@ -173,6 +169,7 @@ public class MemberServiceImpl implements MemberService {
         memberEntity.setEmail(member.getEmail());
         String username = emailToUsername(member.getEmail());
         memberEntity.setUsername(username);
+        memberEntity.setStartWorkingDate(LocalDate.now());
         String tempPassword = String.valueOf(generatePassword());
         memberEntity.setPassword(passwordEncoder(tempPassword));
         memberEntity.setName(member.getName());
@@ -213,8 +210,10 @@ public class MemberServiceImpl implements MemberService {
 
     private void updateMember(MemberDto member, Optional<MemberEntity> memberEntityOptional) {
         memberEntityOptional.get().setEmail(member.getEmail());
+        memberEntityOptional.get().setUsername(member.getUsername());
         memberEntityOptional.get().setName(member.getName());
         memberEntityOptional.get().setSurname(member.getSurname());
+        memberEntityOptional.get().setBirthdate(member.getBirthdate());
 
         memberRepository.save(memberEntityOptional.get());
     }
@@ -228,12 +227,13 @@ public class MemberServiceImpl implements MemberService {
     private GetMemberResponse getResponse(MemberEntity memberEntity) {
         GetMemberResponse getMemberResponse = new GetMemberResponse();
 
-        getMemberResponse.setName(memberEntity.getName());
-        getMemberResponse.setSurname(memberEntity.getSurname());
         getMemberResponse.setEmail(memberEntity.getEmail());
         getMemberResponse.setUsername(memberEntity.getUsername());
-        getMemberResponse.setBirthdate(memberEntity.getBirthdate());
+        getMemberResponse.setStartWorkingDate(memberEntity.getStartWorkingDate());
         getMemberResponse.setStatus(memberEntity.getStatus());
+        getMemberResponse.setName(memberEntity.getName());
+        getMemberResponse.setSurname(memberEntity.getSurname());
+        getMemberResponse.setBirthdate(memberEntity.getBirthdate());
 
         return getMemberResponse;
     }

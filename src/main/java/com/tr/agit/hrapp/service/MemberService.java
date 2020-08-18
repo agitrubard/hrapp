@@ -1,9 +1,6 @@
 package com.tr.agit.hrapp.service;
 
-import com.tr.agit.hrapp.controller.request.ChangePasswordRequest;
-import com.tr.agit.hrapp.controller.request.LoginRequest;
-import com.tr.agit.hrapp.controller.request.SignupRequest;
-import com.tr.agit.hrapp.controller.request.UpdateMemberRequest;
+import com.tr.agit.hrapp.controller.request.*;
 import com.tr.agit.hrapp.controller.response.GetMemberResponse;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
 import com.tr.agit.hrapp.model.exception.MemberAlreadyExistsException;
@@ -24,9 +21,9 @@ public interface MemberService {
 
     void delete(long id) throws MemberNotFoundException;
 
-    List<GetMemberResponse> get();
+    List<GetMemberResponse> getMembers(PaginationRequest paginationRequest);
 
-    GetMemberResponse getById(long id) throws MemberNotFoundException;
+    GetMemberResponse getMemberById(long id) throws MemberNotFoundException;
 
     void sendPersonalInformationMessage(MemberEntity memberEntity, String tempPassword);
 

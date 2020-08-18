@@ -1,9 +1,6 @@
 package com.tr.agit.hrapp.controller;
 
-import com.tr.agit.hrapp.controller.request.ChangePasswordRequest;
-import com.tr.agit.hrapp.controller.request.LoginRequest;
-import com.tr.agit.hrapp.controller.request.SignupRequest;
-import com.tr.agit.hrapp.controller.request.UpdateMemberRequest;
+import com.tr.agit.hrapp.controller.request.*;
 import com.tr.agit.hrapp.controller.response.GetMemberResponse;
 import com.tr.agit.hrapp.model.exception.MemberAlreadyExistsException;
 import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
@@ -46,13 +43,13 @@ public class MemberController {
         memberService.delete(id);
     }
 
-    @GetMapping(value = "/")//pagination -> page : 0 - limit 10
-    public List<GetMemberResponse> getMembers() {
-        return memberService.get();
+    @GetMapping(value = "/")
+    public List<GetMemberResponse> getMembers(@ModelAttribute PaginationRequest paginationRequest) {
+        return memberService.getMembers(paginationRequest);
     }
 
     @GetMapping(value = "/{id}")
     public GetMemberResponse getMemberById(@PathVariable long id) throws MemberNotFoundException {
-        return memberService.getById(id);
+        return memberService.getMemberById(id);
     }
 }

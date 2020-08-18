@@ -8,6 +8,7 @@ import com.tr.agit.hrapp.model.entity.MemberEntity;
 import com.tr.agit.hrapp.model.entity.RoleEntity;
 import com.tr.agit.hrapp.model.enums.MemberStatus;
 import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
+import com.tr.agit.hrapp.model.exception.RoleNotFoundException;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.repository.RoleRepository;
 import com.tr.agit.hrapp.service.RoleService;
@@ -22,22 +23,25 @@ import java.util.stream.Collectors;
 public class RoleServiceImpl implements RoleService {
 
     @Autowired
-    MemberRepository memberRepository;
+    RoleRepository roleRepository;
 
     @Autowired
-    RoleRepository roleRepository;
+    MemberRepository memberRepository;
 
     @Override
     public void add(long id, AddRoleRequest addRoleRequest) throws MemberNotFoundException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
 
-        if (memberEntityOptional.isPresent() && memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE) {
-            Optional<RoleEntity> roleEntityOptional = roleRepository.findByMemberId(memberEntityOptional);
+        boolean memberIsPresent = memberEntityOptional.isPresent();
+        boolean memberStatusIsActive = (memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE);
 
-            if (roleEntityOptional.isPresent()) {
-                updateRole(addRoleRequest, roleEntityOptional);
-            } else {
+        if (memberIsPresent && memberStatusIsActive) {
+            Optional<RoleEntity> roleEntityOptional = roleRepository.findByMemberId(memberEntityOptional.get().getId());
+
+            if (!(roleEntityOptional.isPresent())) {
                 addRole(addRoleRequest, memberEntityOptional);
+            } else {
+                updateRole(addRoleRequest, roleEntityOptional);
             }
         } else {
             throw new MemberNotFoundException();
@@ -45,22 +49,20 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public GetRoleResponse getByMemberId(long id) throws MemberNotFoundException {
+    public GetRoleResponse getRoleByMemberId(long id) throws MemberNotFoundException, RoleNotFoundException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
 
-        boolean roleControl = roleRepository.existsByMemberId(memberEntityOptional);
+        boolean memberIsPresent = memberEntityOptional.isPresent();
 
-        if (roleControl) {
-            Optional<RoleEntity> roleEntity = roleRepository.findByMemberId(memberEntityOptional);
-
-            return getResponse(roleEntity.get());
+        if (memberIsPresent) {
+            return getRole(memberEntityOptional);
         } else {
             throw new MemberNotFoundException();
         }
     }
 
     @Override
-    public List<GetRoleResponse> get() {
+    public List<GetRoleResponse> getMembersRole() {
         List<RoleEntity> roleEntities = roleRepository.findAll();
         return getResponses(roleEntities);
     }
@@ -69,7 +71,7 @@ public class RoleServiceImpl implements RoleService {
         RoleDto role = AddRoleRequestConverter.convert(addRoleRequest);
         RoleEntity roleEntity = new RoleEntity();
 
-        roleEntity.setMemberId(memberEntityOptional.get());
+        roleEntity.setMember(memberEntityOptional.get());
         roleEntity.setType(role.getType());
 
         roleRepository.save(roleEntity);
@@ -83,10 +85,24 @@ public class RoleServiceImpl implements RoleService {
         roleRepository.save(roleEntityOptional.get());
     }
 
+    private GetRoleResponse getRole(Optional<MemberEntity> memberEntityOptional) throws RoleNotFoundException {
+        Optional<RoleEntity> roleEntity = roleRepository.findByMemberId(memberEntityOptional.get().getId());
+
+        boolean roleIsPresent = roleEntity.isPresent();
+
+        if (roleIsPresent) {
+            return getResponse(roleEntity.get());
+        } else {
+            throw new RoleNotFoundException();
+        }
+    }
+
     private GetRoleResponse getResponse(RoleEntity roleEntity) {
         GetRoleResponse getRoleResponse = new GetRoleResponse();
 
-        getRoleResponse.setUsername(roleEntity.getMemberId().getUsername());
+        getRoleResponse.setMemberId(roleEntity.getMember().getId());
+        getRoleResponse.setName(roleEntity.getMember().getName());
+        getRoleResponse.setSurname(roleEntity.getMember().getSurname());
         getRoleResponse.setType(roleEntity.getType());
 
         return getRoleResponse;

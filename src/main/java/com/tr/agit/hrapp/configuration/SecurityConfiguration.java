@@ -32,9 +32,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/member/log-in", "/member/password",
-                        "/member/{id}/create-demand", "/member/{id}/demands").permitAll()
-                .antMatchers("/member/sign-up", "/member/", "/member/{id}", "/{id}/add-role", "/member/{id}/role",
-                        "/member/roles", "/member/{memberId}/demand-status/{demandId}").hasAnyRole("MANAGER", "HR")
+                        "/member/{id}/permission", "/member/{id}/permissions",
+                        "/member/{id}/resign").permitAll()
+                .antMatchers("/member/sign-up", "/member/", "/member/{id}",
+                        "/member/{id}/role", "/member/roles",
+                        "/member/{memberId}/permission-status/{permissionId}",
+                        "/member/{memberId}/resign-status", "/member/resigned").hasAnyRole("MANAGER", "HR")
                 .anyRequest().authenticated()
                 .and().httpBasic();
     }

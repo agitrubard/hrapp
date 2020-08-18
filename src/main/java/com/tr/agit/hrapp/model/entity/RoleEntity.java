@@ -13,13 +13,13 @@ public class RoleEntity {
     @Column(name = "id")
     private long id;
 
-    @JoinColumn(name = "member_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(targetEntity = MemberEntity.class)
-    private MemberEntity memberId;
-
     @Column(name = "type")
     @Enumerated(value = EnumType.STRING)
     private RoleType type;
+
+    @JoinColumn(name = "member", referencedColumnName = "id", nullable = false)
+    @ManyToOne(targetEntity = MemberEntity.class)
+    private MemberEntity member;
 
     public long getId() {
         return id;
@@ -27,14 +27,6 @@ public class RoleEntity {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public MemberEntity getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(MemberEntity memberId) {
-        this.memberId = memberId;
     }
 
     public RoleType getType() {
@@ -45,12 +37,20 @@ public class RoleEntity {
         this.type = type;
     }
 
+    public MemberEntity getMember() {
+        return member;
+    }
+
+    public void setMember(MemberEntity member) {
+        this.member = member;
+    }
+
     @Override
     public String toString() {
         return "RoleEntity{" +
                 "id=" + id +
-                ", memberId=" + memberId +
                 ", type=" + type +
+                ", member=" + member +
                 '}';
     }
 }

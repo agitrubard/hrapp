@@ -1,26 +1,25 @@
-package com.tr.agit.hrapp.controller.response;
+package com.tr.agit.hrapp.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.tr.agit.hrapp.model.enums.DemandStatus;
-import com.tr.agit.hrapp.model.enums.DemandType;
+import com.tr.agit.hrapp.model.enums.PermissionStatus;
+import com.tr.agit.hrapp.model.enums.PermissionType;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class GetDemandResponse {
+public class PermissionDto implements Serializable {
 
-    private DemandType type;
-    @JsonFormat(pattern = "dd.MM.yyyy")
+    private static final long serialVersionUID = -7996772191488623437L;
+    private PermissionType type;
     private LocalDate startDate;
-    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate endDate;
     private long totalDays;
-    private DemandStatus status;
+    private PermissionStatus status;
 
-    public DemandType getType() {
+    public PermissionType getType() {
         return type;
     }
 
-    public void setType(DemandType type) {
+    public void setType(PermissionType type) {
         this.type = type;
     }
 
@@ -48,18 +47,18 @@ public class GetDemandResponse {
         this.totalDays = totalDays;
     }
 
-    public DemandStatus getStatus() {
+    public PermissionStatus getStatus() {
         return status;
     }
 
-    public void setStatus(DemandStatus status) {
+    public void setStatus(PermissionStatus status) {
         this.status = status;
     }
 
     @Override
     public String toString() {
-        return "GetDemandResponse{" +
-                "type=" + type +
+        return "PermissionDto{" +
+                ", type=" + type +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", totalDays=" + totalDays +

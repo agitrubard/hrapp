@@ -1,22 +1,21 @@
 package com.tr.agit.hrapp.controller.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.tr.agit.hrapp.model.enums.MemberStatus;
+import com.tr.agit.hrapp.model.enums.ResignStatus;
 
 import java.time.LocalDate;
 
-public class GetMemberResponse {
+public class GetResignedResponse {
 
     private long memberId;
-    private String email;
-    private String username;
     private String name;
     private String surname;
     @JsonFormat(pattern = "dd.MM.yyyy")
-    private LocalDate birthdate;
-    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate startWorkingDate;
-    private MemberStatus status;
+    @JsonFormat(pattern = "dd.MM.yyyy")
+    private LocalDate endWorkingDate;
+    private long totalWorkingDays;
+    private ResignStatus status;
 
     public long getMemberId() {
         return memberId;
@@ -24,22 +23,6 @@ public class GetMemberResponse {
 
     public void setMemberId(long memberId) {
         this.memberId = memberId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getName() {
@@ -58,14 +41,6 @@ public class GetMemberResponse {
         this.surname = surname;
     }
 
-    public LocalDate getBirthdate() {
-        return birthdate;
-    }
-
-    public void setBirthdate(LocalDate birthdate) {
-        this.birthdate = birthdate;
-    }
-
     public LocalDate getStartWorkingDate() {
         return startWorkingDate;
     }
@@ -74,24 +49,39 @@ public class GetMemberResponse {
         this.startWorkingDate = startWorkingDate;
     }
 
-    public MemberStatus getStatus() {
+    public LocalDate getEndWorkingDate() {
+        return endWorkingDate;
+    }
+
+    public void setEndWorkingDate(LocalDate endWorkingDate) {
+        this.endWorkingDate = endWorkingDate;
+    }
+
+    public long getTotalWorkingDays() {
+        return totalWorkingDays;
+    }
+
+    public void setTotalWorkingDays(long totalWorkingDays) {
+        this.totalWorkingDays = totalWorkingDays;
+    }
+
+    public ResignStatus getStatus() {
         return status;
     }
 
-    public void setStatus(MemberStatus status) {
+    public void setStatus(ResignStatus status) {
         this.status = status;
     }
 
     @Override
     public String toString() {
-        return "GetMemberResponse{" +
+        return "GetResignedResponse{" +
                 "memberId=" + memberId +
-                ", email='" + email + '\'' +
-                ", username='" + username + '\'' +
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
-                ", birthdate=" + birthdate +
                 ", startWorkingDate=" + startWorkingDate +
+                ", endWorkingDate=" + endWorkingDate +
+                ", totalWorkingDays=" + totalWorkingDays +
                 ", status=" + status +
                 '}';
     }
