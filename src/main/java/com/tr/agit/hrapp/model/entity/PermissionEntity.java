@@ -19,13 +19,13 @@ public class PermissionEntity {
     @Enumerated(value = EnumType.STRING)
     private PermissionType type;
 
-    @Column(name = "start_working_date", nullable = false)
+    @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
-    @Column(name = "end_working_date", nullable = false)
+    @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @Column(name = "total_working_days", nullable = false)
+    @Column(name = "total_days", nullable = false)
     private long totalDays;
 
     @Column(name = "status", nullable = false)

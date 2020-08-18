@@ -177,17 +177,6 @@ public class PermissionServiceImpl implements PermissionService {
         }
     }
 
-    private void sendRequestMessage(Optional<PermissionEntity> permissionEntityOptional, PermissionDto permission) {
-        switch (permission.getStatus()) {
-            case ACCEPTED:
-                sendPermissionRequestAcceptedMessage(permissionEntityOptional.get());
-                break;
-            case REJECTED:
-                sendPermissionRequestRejectedMessage(permissionEntityOptional.get());
-                break;
-        }
-    }
-
     private void updatePermissionStatus(UpdatePermissionStatusRequest updatePermissionStatusRequest, long permissionId) throws PermissionNotFoundException {
         Optional<PermissionEntity> permissionEntityOptional = permissionRepository.findById(permissionId);
 
@@ -201,9 +190,20 @@ public class PermissionServiceImpl implements PermissionService {
 
             permissionRepository.save(permissionEntityOptional.get());
 
-
+            sendRequestMessage(permissionEntityOptional, permission);
         } else {
             throw new PermissionNotFoundException();
+        }
+    }
+
+    private void sendRequestMessage(Optional<PermissionEntity> permissionEntityOptional, PermissionDto permission) {
+        switch (permission.getStatus()) {
+            case ACCEPTED:
+                sendPermissionRequestAcceptedMessage(permissionEntityOptional.get());
+                break;
+            case REJECTED:
+                sendPermissionRequestRejectedMessage(permissionEntityOptional.get());
+                break;
         }
     }
 

@@ -5,15 +5,18 @@ import com.tr.agit.hrapp.controller.response.GetResignedResponse;
 import com.tr.agit.hrapp.model.converter.UpdateResignStatusRequestConverter;
 import com.tr.agit.hrapp.model.dto.ResignDto;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
+import com.tr.agit.hrapp.model.entity.PermissionEntity;
 import com.tr.agit.hrapp.model.entity.ResignEntity;
 import com.tr.agit.hrapp.model.entity.RoleEntity;
 import com.tr.agit.hrapp.model.enums.MemberStatus;
+import com.tr.agit.hrapp.model.enums.PermissionStatus;
 import com.tr.agit.hrapp.model.enums.ResignStatus;
 import com.tr.agit.hrapp.model.enums.RoleType;
 import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
 import com.tr.agit.hrapp.model.exception.ResignAlreadyExistException;
 import com.tr.agit.hrapp.model.exception.ResignNotFoundException;
 import com.tr.agit.hrapp.repository.MemberRepository;
+import com.tr.agit.hrapp.repository.PermissionRepository;
 import com.tr.agit.hrapp.repository.ResignRepository;
 import com.tr.agit.hrapp.service.MemberService;
 import com.tr.agit.hrapp.service.ResignService;
@@ -37,6 +40,9 @@ public class ResignServiceImpl implements ResignService {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    PermissionRepository permissionRepository;
 
     @Autowired
     MemberService memberService;
@@ -134,13 +140,27 @@ public class ResignServiceImpl implements ResignService {
 
         resignEntity.setMember(memberEntityOptional.get());
         resignEntity.setResignDate(LocalDate.now());
-        long totalWorkingDays = ChronoUnit.DAYS.between(memberEntityOptional.get().getStartWorkingDate(), resignEntity.getResignDate());
+        long totalWorkingDays = calculateTotalWorkingDays(memberEntityOptional.get(), resignEntity.getResignDate());
         resignEntity.setTotalWorkingDays(totalWorkingDays);
         resignEntity.setStatus(ResignStatus.WAITINGFORAPPRROVAL);
 
         resignRepository.save(resignEntity);
 
         sendResignInformationMessage(resignEntity);
+    }
+
+    private long calculateTotalWorkingDays(MemberEntity memberEntity, LocalDate resignDate) {
+        long totalWorkingDays = ChronoUnit.DAYS.between(memberEntity.getStartWorkingDate(), resignDate);
+
+        List<PermissionEntity> permissionEntities = permissionRepository.findByMemberId(memberEntity.getId());
+
+        for (PermissionEntity permission : permissionEntities) {
+            boolean permissionControl = (permission.getStatus() == PermissionStatus.ACCEPTED);
+            if (permissionControl) {
+                totalWorkingDays -= permission.getTotalDays();
+            }
+        }
+        return totalWorkingDays;
     }
 
     private void updateResignStatus(long id, UpdateResignStatusRequest updateResignStatusRequest) throws MemberNotFoundException, ResignNotFoundException {
