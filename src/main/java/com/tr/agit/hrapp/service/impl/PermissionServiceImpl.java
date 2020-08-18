@@ -10,15 +10,20 @@ import com.tr.agit.hrapp.model.converter.UpdatePermissionStatusRequestConverter;
 import com.tr.agit.hrapp.model.dto.PermissionDto;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
 import com.tr.agit.hrapp.model.entity.PermissionEntity;
+import com.tr.agit.hrapp.model.entity.RoleEntity;
 import com.tr.agit.hrapp.model.enums.MemberStatus;
+import com.tr.agit.hrapp.model.enums.RoleType;
 import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
 import com.tr.agit.hrapp.model.exception.PermissionNotFoundException;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.repository.PermissionRepository;
 import com.tr.agit.hrapp.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,6 +36,9 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     @Override
     public void create(long id, CreatePermissionRequest createPermissionRequest) throws MemberNotFoundException {
@@ -87,6 +95,48 @@ public class PermissionServiceImpl implements PermissionService {
         } else {
             throw new MemberNotFoundException();
         }
+    }
+
+    @Override
+    public void sendPermissionInformationMessage(PermissionEntity permissionEntity) {
+        List<MemberEntity> memberEntities = memberRepository.findAll();
+
+        for (MemberEntity member : memberEntities) {
+            boolean roleControl = memberRoleControl(member.getRole());
+            if (roleControl) {
+                sendMail(permissionEntity.getMember().getEmail(), member.getEmail(),
+                        permissionEntity.getMember().getName() + "'s Permission Request",
+                        "Member ID : " + permissionEntity.getMember().getId() +
+                                "\nName : " + permissionEntity.getMember().getName() +
+                                "\nSurname : " + permissionEntity.getMember().getSurname() +
+                                "\nPermission Type : " + permissionEntity.getType() +
+                                "\nStart Permission Date : " + permissionEntity.getMember().getStartWorkingDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
+                                "\nEnd Permission Date : " + permissionEntity.getEndDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
+                                "\nTotal Permission Days : " + permissionEntity.getTotalDays());
+            }
+        }
+    }
+
+    @Override
+    public void sendPermissionRequestAcceptedMessage(PermissionEntity permissionEntity) {
+        sendMail("admin@hrapp.com", permissionEntity.getMember().getEmail(),
+                "Your Permission Request Accepted!",
+                "Permission Type : " + permissionEntity.getType() +
+                        "\nStart Permission Date : " + permissionEntity.getMember().getStartWorkingDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
+                        "\nEnd Permission Date : " + permissionEntity.getEndDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
+                        "\nTotal Permission Days : " + permissionEntity.getTotalDays() +
+                        "\nPermission Status : " + permissionEntity.getStatus());
+    }
+
+    @Override
+    public void sendPermissionRequestRejectedMessage(PermissionEntity permissionEntity) {
+        sendMail("admin@hrapp.com", permissionEntity.getMember().getEmail(),
+                "Your Permission Request Rejected!",
+                "Permission Type : " + permissionEntity.getType() +
+                        "\nStart Permission Date : " + permissionEntity.getMember().getStartWorkingDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
+                        "\nEnd Permission Date : " + permissionEntity.getEndDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
+                        "\nTotal Permission Days : " + permissionEntity.getTotalDays() +
+                        "\nPermission Status : " + permissionEntity.getStatus());
     }
 
     private void savePermission(CreatePermissionRequest createPermissionRequest, Optional<MemberEntity> memberEntityOptional) {
@@ -152,5 +202,24 @@ public class PermissionServiceImpl implements PermissionService {
 
     private List<GetPermissionResponse> getResponses(List<PermissionEntity> permissionEntities) {
         return Optional.of(permissionEntities.stream().map(this::getResponse).collect(Collectors.toList())).orElse(null);
+    }
+
+    private void sendMail(String from, String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setFrom(from);
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+
+        javaMailSender.send(message);
+    }
+
+    private boolean memberRoleControl(RoleEntity role) {
+        try {
+            return role.getType() == RoleType.HR;
+        } catch (NullPointerException e) {
+            return false;
+        }
     }
 }

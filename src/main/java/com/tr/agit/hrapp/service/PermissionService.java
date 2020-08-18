@@ -4,6 +4,7 @@ import com.tr.agit.hrapp.controller.request.CreatePermissionRequest;
 import com.tr.agit.hrapp.controller.request.UpdatePermissionRequest;
 import com.tr.agit.hrapp.controller.request.UpdatePermissionStatusRequest;
 import com.tr.agit.hrapp.controller.response.GetPermissionResponse;
+import com.tr.agit.hrapp.model.entity.PermissionEntity;
 import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
 import com.tr.agit.hrapp.model.exception.PermissionNotFoundException;
 
@@ -18,4 +19,10 @@ public interface PermissionService {
     void updateStatus(long memberId, UpdatePermissionStatusRequest updatePermissionStatusRequest, long permissionId) throws MemberNotFoundException, PermissionNotFoundException;
 
     List<GetPermissionResponse> getPermissionsByMemberId(long id) throws MemberNotFoundException;
+
+    void sendPermissionInformationMessage(PermissionEntity permissionEntity);
+
+    void sendPermissionRequestAcceptedMessage(PermissionEntity permissionEntity);
+
+    void sendPermissionRequestRejectedMessage(PermissionEntity permissionEntity);
 }

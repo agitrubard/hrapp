@@ -87,7 +87,8 @@ public class ResignServiceImpl implements ResignService {
             if (roleControl) {
                 sendMail(resignEntity.getMember().getEmail(), member.getEmail(),
                         resignEntity.getMember().getName() + "'s Resign Request",
-                        "Name : " + resignEntity.getMember().getName() +
+                        "Member ID : " + resignEntity.getMember().getId() +
+                                "\nName : " + resignEntity.getMember().getName() +
                                 "\nSurname : " + resignEntity.getMember().getSurname() +
                                 "\nStart Working Date : " + resignEntity.getMember().getStartWorkingDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
                                 "\nResign Date : " + resignEntity.getResignDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
@@ -99,7 +100,7 @@ public class ResignServiceImpl implements ResignService {
     @Override
     public void sendResignRequestAcceptedMessage(ResignEntity resignEntity) {
         sendMail("admin@hrapp.com", resignEntity.getMember().getEmail(),
-                "Resignation Request Accepted!",
+                "Your Resignation Request Accepted!",
                 "Start Working Date : " + resignEntity.getMember().getStartWorkingDate() +
                         "\nEnd Working Date : " + resignEntity.getResignDate() +
                         "\nTotal Working Days : " + resignEntity.getTotalWorkingDays() +
@@ -109,7 +110,7 @@ public class ResignServiceImpl implements ResignService {
     @Override
     public void sendResignRequestRejectedMessage(ResignEntity resignEntity) {
         sendMail("admin@hrapp.com", resignEntity.getMember().getEmail(),
-                "Resignation Request Rejected!",
+                "Your Resignation Request Rejected!",
                 "Start Working Date : " + resignEntity.getMember().getStartWorkingDate() +
                         "\nResign Date : " + resignEntity.getResignDate() +
                         "\nTotal Working Days : " + resignEntity.getTotalWorkingDays() +
