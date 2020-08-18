@@ -12,6 +12,7 @@ import com.tr.agit.hrapp.model.entity.MemberEntity;
 import com.tr.agit.hrapp.model.entity.PermissionEntity;
 import com.tr.agit.hrapp.model.entity.RoleEntity;
 import com.tr.agit.hrapp.model.enums.MemberStatus;
+import com.tr.agit.hrapp.model.enums.PermissionStatus;
 import com.tr.agit.hrapp.model.enums.RoleType;
 import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
 import com.tr.agit.hrapp.model.exception.PermissionNotFoundException;
@@ -48,7 +49,7 @@ public class PermissionServiceImpl implements PermissionService {
         boolean memberStatusIsActive = (memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE);
 
         if (memberIsPresent && memberStatusIsActive) {
-            savePermission(createPermissionRequest, memberEntityOptional);
+            createPermission(createPermissionRequest, memberEntityOptional);
         } else {
             throw new MemberNotFoundException();
         }
@@ -139,7 +140,7 @@ public class PermissionServiceImpl implements PermissionService {
                         "\nPermission Status : " + permissionEntity.getStatus());
     }
 
-    private void savePermission(CreatePermissionRequest createPermissionRequest, Optional<MemberEntity> memberEntityOptional) {
+    private void createPermission(CreatePermissionRequest createPermissionRequest, Optional<MemberEntity> memberEntityOptional) {
         PermissionDto permission = CreatePermissionRequestConverter.convert(createPermissionRequest);
         PermissionEntity permissionEntity = new PermissionEntity();
 
@@ -151,6 +152,8 @@ public class PermissionServiceImpl implements PermissionService {
         permissionEntity.setStatus(permission.getStatus());
 
         permissionRepository.save(permissionEntity);
+
+        sendPermissionInformationMessage(permissionEntity);
     }
 
     private void updatePermission(UpdatePermissionRequest updatePermissionRequest, long permissionId) throws PermissionNotFoundException {
@@ -167,8 +170,21 @@ public class PermissionServiceImpl implements PermissionService {
             permissionEntityOptional.get().setTotalDays(permission.getTotalDays());
 
             permissionRepository.save(permissionEntityOptional.get());
+
+            sendRequestMessage(permissionEntityOptional, permission);
         } else {
             throw new PermissionNotFoundException();
+        }
+    }
+
+    private void sendRequestMessage(Optional<PermissionEntity> permissionEntityOptional, PermissionDto permission) {
+        switch (permission.getStatus()) {
+            case ACCEPTED:
+                sendPermissionRequestAcceptedMessage(permissionEntityOptional.get());
+                break;
+            case REJECTED:
+                sendPermissionRequestRejectedMessage(permissionEntityOptional.get());
+                break;
         }
     }
 
@@ -176,13 +192,16 @@ public class PermissionServiceImpl implements PermissionService {
         Optional<PermissionEntity> permissionEntityOptional = permissionRepository.findById(permissionId);
 
         boolean permissionIsPresent = permissionEntityOptional.isPresent();
+        boolean permissionStatusControl = (permissionEntityOptional.get().getStatus() == PermissionStatus.WAITINGFORAPPRROVAL);
 
-        if (permissionIsPresent) {
+        if (permissionIsPresent && permissionStatusControl) {
             PermissionDto permission = UpdatePermissionStatusRequestConverter.convert(updatePermissionStatusRequest);
 
             permissionEntityOptional.get().setStatus(permission.getStatus());
 
             permissionRepository.save(permissionEntityOptional.get());
+
+
         } else {
             throw new PermissionNotFoundException();
         }

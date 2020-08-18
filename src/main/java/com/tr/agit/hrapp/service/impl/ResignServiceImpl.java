@@ -60,15 +60,15 @@ public class ResignServiceImpl implements ResignService {
 
     @Override
     public void updateStatus(long id, UpdateResignStatusRequest updateResignStatusRequest) throws ResignNotFoundException, MemberNotFoundException {
-        Optional<ResignEntity> resignEntityOptional = resignRepository.findByMemberId(id);
+        Optional<MemberEntity> memberEntityOptional = memberRepository.findById(id);
 
-        boolean resignIsPresent = resignEntityOptional.isPresent();
-        boolean resignStatusControl = (resignEntityOptional.get().getStatus() == ResignStatus.WAITINGFORAPPRROVAL);
+        boolean memberIsPresent = memberEntityOptional.isPresent();
+        boolean memberStatusIsActive = (memberEntityOptional.get().getStatus() == MemberStatus.ACTIVE);
 
-        if (resignIsPresent && resignStatusControl) {
-            update(updateResignStatusRequest, resignEntityOptional);
+        if (memberIsPresent && memberStatusIsActive) {
+            updateResignStatus(id, updateResignStatusRequest);
         } else {
-            throw new ResignNotFoundException();
+            throw new MemberNotFoundException();
         }
     }
 
@@ -143,13 +143,26 @@ public class ResignServiceImpl implements ResignService {
         sendResignInformationMessage(resignEntity);
     }
 
-    private void update(UpdateResignStatusRequest updateResignStatusRequest, Optional<ResignEntity> resignEntityOptional) throws MemberNotFoundException {
-        ResignDto resign = UpdateResignStatusRequestConverter.convert(updateResignStatusRequest);
+    private void updateResignStatus(long id, UpdateResignStatusRequest updateResignStatusRequest) throws MemberNotFoundException, ResignNotFoundException {
+        Optional<ResignEntity> resignEntityOptional = resignRepository.findByMemberId(id);
 
-        resignEntityOptional.get().setStatus(resign.getStatus());
+        boolean resignIsPresent = resignEntityOptional.isPresent();
+        boolean resignStatusControl = (resignEntityOptional.get().getStatus() == ResignStatus.WAITINGFORAPPRROVAL);
 
-        resignRepository.save(resignEntityOptional.get());
+        if (resignIsPresent && resignStatusControl) {
+            ResignDto resign = UpdateResignStatusRequestConverter.convert(updateResignStatusRequest);
 
+            resignEntityOptional.get().setStatus(resign.getStatus());
+
+            resignRepository.save(resignEntityOptional.get());
+
+            sendRequestMessage(resignEntityOptional, resign);
+        } else {
+            throw new ResignNotFoundException();
+        }
+    }
+
+    private void sendRequestMessage(Optional<ResignEntity> resignEntityOptional, ResignDto resign) throws MemberNotFoundException {
         switch (resign.getStatus()) {
             case ACCEPTED:
                 sendResignRequestAcceptedMessage(resignEntityOptional.get());
