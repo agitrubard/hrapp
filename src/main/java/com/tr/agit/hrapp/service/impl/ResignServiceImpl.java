@@ -7,11 +7,9 @@ import com.tr.agit.hrapp.model.dto.ResignDto;
 import com.tr.agit.hrapp.model.entity.MemberEntity;
 import com.tr.agit.hrapp.model.entity.PermissionEntity;
 import com.tr.agit.hrapp.model.entity.ResignEntity;
-import com.tr.agit.hrapp.model.entity.RoleEntity;
 import com.tr.agit.hrapp.model.enums.MemberStatus;
 import com.tr.agit.hrapp.model.enums.PermissionStatus;
 import com.tr.agit.hrapp.model.enums.ResignStatus;
-import com.tr.agit.hrapp.model.enums.RoleType;
 import com.tr.agit.hrapp.model.exception.MemberNotFoundException;
 import com.tr.agit.hrapp.model.exception.ResignAlreadyExistException;
 import com.tr.agit.hrapp.model.exception.ResignNotFoundException;
@@ -19,14 +17,13 @@ import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.repository.PermissionRepository;
 import com.tr.agit.hrapp.repository.ResignRepository;
 import com.tr.agit.hrapp.service.MemberService;
+import com.tr.agit.hrapp.service.NotificationService;
 import com.tr.agit.hrapp.service.ResignService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +43,9 @@ public class ResignServiceImpl implements ResignService {
 
     @Autowired
     MemberService memberService;
+
+    @Autowired
+    NotificationService notificationService;
 
     @Autowired
     private JavaMailSender javaMailSender;
@@ -84,45 +84,6 @@ public class ResignServiceImpl implements ResignService {
         return getResponses(resignEntities);
     }
 
-    @Override
-    public void sendResignInformationMessage(ResignEntity resignEntity) {
-        List<MemberEntity> memberEntities = memberRepository.findAll();
-
-        for (MemberEntity member : memberEntities) {
-            boolean roleControl = memberRoleControl(member.getRole());
-            if (roleControl) {
-                sendMail(resignEntity.getMember().getEmail(), member.getEmail(),
-                        resignEntity.getMember().getName() + "'s Resign Request",
-                        "Member ID : " + resignEntity.getMember().getId() +
-                                "\nName : " + resignEntity.getMember().getName() +
-                                "\nSurname : " + resignEntity.getMember().getSurname() +
-                                "\nStart Working Date : " + resignEntity.getMember().getStartWorkingDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
-                                "\nResign Date : " + resignEntity.getResignDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
-                                "\nTotal Working Days : " + resignEntity.getTotalWorkingDays());
-            }
-        }
-    }
-
-    @Override
-    public void sendResignRequestAcceptedMessage(ResignEntity resignEntity) {
-        sendMail("admin@hrapp.com", resignEntity.getMember().getEmail(),
-                "Your Resignation Request Accepted!",
-                "Start Working Date : " + resignEntity.getMember().getStartWorkingDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
-                        "\nEnd Working Date : " + resignEntity.getResignDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
-                        "\nTotal Working Days : " + resignEntity.getTotalWorkingDays() +
-                        "\nResign Status : " + resignEntity.getStatus());
-    }
-
-    @Override
-    public void sendResignRequestRejectedMessage(ResignEntity resignEntity) {
-        sendMail("admin@hrapp.com", resignEntity.getMember().getEmail(),
-                "Your Resignation Request Rejected!",
-                "Start Working Date : " + resignEntity.getMember().getStartWorkingDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
-                        "\nResign Date : " + resignEntity.getResignDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) +
-                        "\nTotal Working Days : " + resignEntity.getTotalWorkingDays() +
-                        "\nResign Status : " + resignEntity.getStatus());
-    }
-
     private void create(Optional<MemberEntity> memberEntityOptional) throws ResignAlreadyExistException {
         Optional<ResignEntity> resignEntityOptional = resignRepository.findByMemberId(memberEntityOptional.get().getId());
 
@@ -146,7 +107,7 @@ public class ResignServiceImpl implements ResignService {
 
         resignRepository.save(resignEntity);
 
-        sendResignInformationMessage(resignEntity);
+        notificationService.sendResignInformationMessage(resignEntity);
     }
 
     private long calculateTotalWorkingDays(MemberEntity memberEntity, LocalDate resignDate) {
@@ -185,11 +146,11 @@ public class ResignServiceImpl implements ResignService {
     private void sendRequestMessage(Optional<ResignEntity> resignEntityOptional, ResignDto resign) throws MemberNotFoundException {
         switch (resign.getStatus()) {
             case ACCEPTED:
-                sendResignRequestAcceptedMessage(resignEntityOptional.get());
+                notificationService.sendResignRequestAcceptedMessage(resignEntityOptional.get());
                 memberService.delete(resignEntityOptional.get().getMember().getId());
                 break;
             case REJECTED:
-                sendResignRequestRejectedMessage(resignEntityOptional.get());
+                notificationService.sendResignRequestRejectedMessage(resignEntityOptional.get());
                 break;
         }
     }
@@ -210,24 +171,5 @@ public class ResignServiceImpl implements ResignService {
 
     private List<GetResignedResponse> getResponses(List<ResignEntity> resignEntities) {
         return Optional.of(resignEntities.stream().map(this::getResponse).collect(Collectors.toList())).orElse(null);
-    }
-
-    private void sendMail(String from, String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-
-        message.setFrom(from);
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-
-        javaMailSender.send(message);
-    }
-
-    private boolean memberRoleControl(RoleEntity role) {
-        try {
-            return role.getType() == RoleType.HR;
-        } catch (NullPointerException e) {
-            return false;
-        }
     }
 }
