@@ -15,12 +15,10 @@ import com.tr.agit.hrapp.model.exception.PasswordNotCorrectException;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.repository.RoleRepository;
 import com.tr.agit.hrapp.service.MemberService;
+import com.tr.agit.hrapp.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +38,7 @@ public class MemberServiceImpl implements MemberService {
     RoleRepository roleRepository;
 
     @Autowired
-    private JavaMailSender javaMailSender;
+    NotificationService notificationService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -133,24 +131,6 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-    @Override
-    public void sendPersonalInformationMessage(MemberEntity memberEntity, String tempPassword) {
-        sendMail(memberEntity.getEmail(), "Welcome to HRApp", "Username : " + memberEntity.getUsername() + "\nTemporary Password : " + tempPassword);
-    }
-
-    @Override
-    @Scheduled(cron = "0 0 9 * * *", zone = "Europe/Istanbul") //"*/5 * * * * *"
-    public void sendBirthdayMessage() {
-        List<MemberEntity> memberEntities = memberRepository.findAll();
-
-        for (MemberEntity member : memberEntities) {
-            boolean dateControl = birthdateControl(member.getBirthdate());
-            if (dateControl) {
-                sendMail(member.getEmail(), "Happy Birthday!", "Happy birthday to you " + member.getName() + "!");
-            }
-        }
-    }
-
     private void save(MemberDto member) throws MemberAlreadyExistsException {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findByEmail(member.getEmail());
 
@@ -179,7 +159,7 @@ public class MemberServiceImpl implements MemberService {
 
         memberRepository.save(memberEntity);
 
-        sendPersonalInformationMessage(memberEntity, tempPassword);
+        notificationService.sendPersonalInformationMessage(memberEntity, tempPassword);
     }
 
     private String emailToUsername(String email) {
@@ -240,25 +220,6 @@ public class MemberServiceImpl implements MemberService {
 
     private List<GetMemberResponse> getResponses(List<MemberEntity> memberEntities) {
         return Optional.of(memberEntities.stream().map(this::getResponse).collect(Collectors.toList())).orElse(null);
-    }
-
-    private void sendMail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-
-        message.setFrom("admin@hrapp.com");
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-
-        javaMailSender.send(message);
-    }
-
-    private boolean birthdateControl(LocalDate birthdate) {
-        boolean monthControl = (birthdate.getMonthValue() == LocalDate.now().getMonthValue());
-        boolean dayControl = (birthdate.getDayOfMonth() == LocalDate.now().getDayOfMonth());
-
-        if (monthControl) return dayControl;
-        return false;
     }
 
     private int generatePassword() {
