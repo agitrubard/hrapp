@@ -2,12 +2,18 @@ package com.tr.agit.hrapp.model.entity;
 
 import com.tr.agit.hrapp.model.enums.PermissionStatus;
 import com.tr.agit.hrapp.model.enums.PermissionType;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "permissions")
+@Getter
+@Setter
+@ToString
 public class PermissionEntity {
 
     @Id
@@ -35,6 +41,9 @@ public class PermissionEntity {
     @JoinColumn(name = "member", referencedColumnName = "id", nullable = false)
     @ManyToOne(targetEntity = MemberEntity.class)
     private MemberEntity member;
+
+    /*
+
 
     public long getId() {
         return id;
@@ -104,4 +113,5 @@ public class PermissionEntity {
                 ", member=" + member +
                 '}';
     }
+     */
 }

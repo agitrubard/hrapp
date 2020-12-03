@@ -16,7 +16,6 @@ import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.repository.RoleRepository;
 import com.tr.agit.hrapp.service.MemberService;
 import com.tr.agit.hrapp.service.NotificationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,14 +30,15 @@ import java.util.stream.Collectors;
 @Service
 public class MemberServiceImpl implements MemberService {
 
-    @Autowired
     MemberRepository memberRepository;
-
-    @Autowired
     RoleRepository roleRepository;
-
-    @Autowired
     NotificationService notificationService;
+
+    public MemberServiceImpl(MemberRepository memberRepository, RoleRepository roleRepository, NotificationService notificationService) {
+        this.memberRepository = memberRepository;
+        this.roleRepository = roleRepository;
+        this.notificationService = notificationService;
+    }
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 

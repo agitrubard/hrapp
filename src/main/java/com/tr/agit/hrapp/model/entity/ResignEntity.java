@@ -1,12 +1,18 @@
 package com.tr.agit.hrapp.model.entity;
 
 import com.tr.agit.hrapp.model.enums.ResignStatus;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "resignations")
+@Getter
+@Setter
+@ToString
 public class ResignEntity {
 
     @Id
@@ -27,6 +33,9 @@ public class ResignEntity {
     @JoinColumn(name = "member", referencedColumnName = "id", nullable = false)
     @ManyToOne(targetEntity = MemberEntity.class)
     private MemberEntity member;
+
+    /*
+    *
 
     public long getId() {
         return id;
@@ -77,5 +86,5 @@ public class ResignEntity {
                 ", status=" + status +
                 ", member=" + member +
                 '}';
-    }
+    }*/
 }

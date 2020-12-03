@@ -12,7 +12,6 @@ import com.tr.agit.hrapp.model.exception.RoleNotFoundException;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.repository.RoleRepository;
 import com.tr.agit.hrapp.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,11 +21,13 @@ import java.util.stream.Collectors;
 @Service
 public class RoleServiceImpl implements RoleService {
 
-    @Autowired
     RoleRepository roleRepository;
-
-    @Autowired
     MemberRepository memberRepository;
+
+    public RoleServiceImpl(RoleRepository roleRepository, MemberRepository memberRepository) {
+        this.roleRepository = roleRepository;
+        this.memberRepository = memberRepository;
+    }
 
     @Override
     public void add(long id, AddRoleRequest addRoleRequest) throws MemberNotFoundException {

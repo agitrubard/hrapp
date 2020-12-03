@@ -15,8 +15,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableJpaRepositories(basePackageClasses = MemberRepository.class)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private CustomUserDetailService userDetailService;
+    CustomUserDetailService userDetailService;
+
+    public SecurityConfiguration(CustomUserDetailService userDetailService) {
+        this.userDetailService = userDetailService;
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

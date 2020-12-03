@@ -7,7 +7,6 @@ import com.tr.agit.hrapp.model.entity.RoleEntity;
 import com.tr.agit.hrapp.model.enums.RoleType;
 import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.service.NotificationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,11 +19,13 @@ import java.util.List;
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
-    @Autowired
     MemberRepository memberRepository;
+    JavaMailSender javaMailSender;
 
-    @Autowired
-    private JavaMailSender javaMailSender;
+    public NotificationServiceImpl(MemberRepository memberRepository, JavaMailSender javaMailSender) {
+        this.memberRepository = memberRepository;
+        this.javaMailSender = javaMailSender;
+    }
 
     @Override
     public void sendPersonalInformationMessage(MemberEntity memberEntity, String tempPassword) {

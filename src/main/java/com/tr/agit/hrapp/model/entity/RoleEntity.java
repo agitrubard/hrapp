@@ -1,11 +1,17 @@
 package com.tr.agit.hrapp.model.entity;
 
 import com.tr.agit.hrapp.model.enums.RoleType;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "roles")
+@Getter
+@Setter
+@ToString
 public class RoleEntity {
 
     @Id
@@ -20,6 +26,9 @@ public class RoleEntity {
     @JoinColumn(name = "member", referencedColumnName = "id", nullable = false)
     @ManyToOne(targetEntity = MemberEntity.class)
     private MemberEntity member;
+
+    /*
+    *
 
     public long getId() {
         return id;
@@ -52,5 +61,5 @@ public class RoleEntity {
                 ", type=" + type +
                 ", member=" + member +
                 '}';
-    }
+    }*/
 }

@@ -19,7 +19,6 @@ import com.tr.agit.hrapp.repository.ResignRepository;
 import com.tr.agit.hrapp.service.MemberService;
 import com.tr.agit.hrapp.service.NotificationService;
 import com.tr.agit.hrapp.service.ResignService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -32,23 +31,26 @@ import java.util.stream.Collectors;
 @Service
 public class ResignServiceImpl implements ResignService {
 
-    @Autowired
     ResignRepository resignRepository;
-
-    @Autowired
     MemberRepository memberRepository;
-
-    @Autowired
     PermissionRepository permissionRepository;
-
-    @Autowired
     MemberService memberService;
-
-    @Autowired
     NotificationService notificationService;
+    JavaMailSender javaMailSender;
 
-    @Autowired
-    private JavaMailSender javaMailSender;
+    public ResignServiceImpl(ResignRepository resignRepository,
+                             MemberRepository memberRepository,
+                             PermissionRepository permissionRepository,
+                             MemberService memberService,
+                             NotificationService notificationService,
+                             JavaMailSender javaMailSender) {
+        this.resignRepository = resignRepository;
+        this.memberRepository = memberRepository;
+        this.permissionRepository = permissionRepository;
+        this.memberService = memberService;
+        this.notificationService = notificationService;
+        this.javaMailSender = javaMailSender;
+    }
 
     @Override
     public void create(long id) throws MemberNotFoundException, ResignAlreadyExistException {

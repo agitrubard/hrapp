@@ -18,7 +18,6 @@ import com.tr.agit.hrapp.repository.MemberRepository;
 import com.tr.agit.hrapp.repository.PermissionRepository;
 import com.tr.agit.hrapp.service.NotificationService;
 import com.tr.agit.hrapp.service.PermissionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -29,17 +28,17 @@ import java.util.stream.Collectors;
 @Service
 public class PermissionServiceImpl implements PermissionService {
 
-    @Autowired
     PermissionRepository permissionRepository;
-
-    @Autowired
     MemberRepository memberRepository;
-
-    @Autowired
     NotificationService notificationService;
+    JavaMailSender javaMailSender;
 
-    @Autowired
-    private JavaMailSender javaMailSender;
+    public PermissionServiceImpl(PermissionRepository permissionRepository, MemberRepository memberRepository, NotificationService notificationService, JavaMailSender javaMailSender) {
+        this.permissionRepository = permissionRepository;
+        this.memberRepository = memberRepository;
+        this.notificationService = notificationService;
+        this.javaMailSender = javaMailSender;
+    }
 
     @Override
     public void create(long id, CreatePermissionRequest createPermissionRequest) throws MemberNotFoundException {

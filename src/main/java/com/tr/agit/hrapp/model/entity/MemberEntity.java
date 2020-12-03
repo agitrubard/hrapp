@@ -1,6 +1,7 @@
 package com.tr.agit.hrapp.model.entity;
 
 import com.tr.agit.hrapp.model.enums.MemberStatus;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -8,6 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "members")
+@Data
 public class MemberEntity {
 
     @Id
@@ -49,6 +51,8 @@ public class MemberEntity {
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private ResignEntity resign;
 
+    /*
+    *
     public MemberEntity() {
     }
 
@@ -169,5 +173,5 @@ public class MemberEntity {
                 ", birthdate=" + birthdate +
                 ", resign=" + resign +
                 '}';
-    }
+    }*/
 }
