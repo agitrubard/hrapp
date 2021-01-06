@@ -9,8 +9,6 @@
 4) Employees can change their passwords whenever they want.
 5) May request permission (Maternity Leave, Annual Permit, Paternity Leave, Excuse Leave) in case of employee's request. 
 6) Employees can view the history of the permission they have request.
-7) The human resources can approved permissions.
-8) The human resources can added roles the employees.
-9) The human resources can update, delete employe.
-10) An information mail is sent when employees' leave is approved or denied.
-11) A congratulatory mail is sent on the employee's birthday.
+7) The human resources can approved permissions, added roles the employees, update, delete employe.
+8) An information mail is sent when employees' leave is approved or denied.
+9) A congratulatory mail is sent on the employee's birthday.
